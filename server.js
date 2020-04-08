@@ -18,5 +18,7 @@ app.use((req, res) => {
 
 app.get('/', (_, res) => res.json({ ok: 'ok' }));
 
+app.get('/test', (_, res) => res.json({ ok: 'ok' }));
+
 // eslint-disable-next-line no-console
 app.listen(port, (err) => console.log(err || `server listening on port ${port}`));
