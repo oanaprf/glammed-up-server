@@ -1,9 +1,13 @@
 const USER = {
   FIELDS: {
-    FIRST_NAME: 'first name',
-    LAST_NAME: 'last name',
+    ID: '_id',
+    FIRST_NAME: 'firstName',
+    LAST_NAME: 'lastName',
     EMAIL: 'email',
-    PHONE_NUMBER: 'phone number',
+    PHONE_NUMBER: 'phoneNumber',
+    ADDRESS: 'address',
+    IS_PROVIDER: 'isProvider',
+    PROFILE_PICTURE: 'profilePicture',
   },
   REQUIRED: {
     FIRST_NAME: 'First name is required',
@@ -12,6 +16,9 @@ const USER = {
   },
 };
 
+const notValidMessage = field => ({ value }) => `${value} is not a valid ${field}`;
+
 module.exports = {
   USER,
+  notValidMessage,
 };

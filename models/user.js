@@ -1,13 +1,11 @@
 const mongoose = require('mongoose');
-const { USER } = require('./constants');
+const { USER, notValidMessage } = require('./constants');
 
-const isValidName = (value) => /^[a-zA-Z]*$/.test(value);
-
-const notValidMessage = (field) => ({ value }) => `${value} is not a valid ${field}`;
+const isValidName = value => /^[a-zA-Z]*$/.test(value);
 
 const UserSchema = new mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
-  firstName: {
+  [USER.FIELDS.ID]: mongoose.Schema.Types.ObjectId,
+  [USER.FIELDS.FIRST_NAME]: {
     type: String,
     required: [true, USER.REQUIRED.FIRST_NAME],
     validate: {
@@ -15,7 +13,7 @@ const UserSchema = new mongoose.Schema({
       message: notValidMessage(USER.FIELDS.FIRST_NAME),
     },
   },
-  lastName: {
+  [USER.FIELDS.LAST_NAME]: {
     type: String,
     required: [true, USER.REQUIRED.LAST_NAME],
     validate: {
@@ -23,25 +21,25 @@ const UserSchema = new mongoose.Schema({
       message: notValidMessage(USER.FIELDS.LAST_NAME),
     },
   },
-  email: {
+  [USER.FIELDS.EMAIL]: {
     type: String,
     required: [true, USER.REQUIRED.EMAIL],
     validate: {
-      validator: (value) => /^[^@\s]+@[^@\s.]+\.[^@.\s]+$/.test(value),
+      validator: value => /^[^@\s]+@[^@\s.]+\.[^@.\s]+$/.test(value),
       message: notValidMessage(USER.FIELDS.EMAIL),
       unique: true,
     },
   },
-  phone: {
+  [USER.FIELDS.PHONE_NUMBER]: {
     type: String,
     validate: {
-      validator: (value) => /^\d{10}$/.test(value),
+      validator: value => /^\d{10}$/.test(value),
       message: notValidMessage(USER.FIELDS.PHONE_NUMBER),
     },
   },
-  address: String,
-  isProvider: { type: Boolean, default: false },
-  profilePicture: Buffer,
+  [USER.FIELDS.ADDRESS]: String,
+  [USER.FIELDS.IS_PROVIDER]: { type: Boolean, default: false },
+  [USER.FIELDS.PROFILE_PICTURE]: Buffer,
 });
 
 const User = mongoose.model('user', UserSchema);

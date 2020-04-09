@@ -19,9 +19,9 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .catch((err) => console.error(err));
-mongoose.connection.on('error', (err) => {
+  .catch(err => console.error(err));
+mongoose.connection.on('error', err => {
   console.error(err);
 });
 
-app.listen(port, (err) => console.log(err || `server listening on port ${port}`));
+app.listen(port, err => console.log(err || `server listening on port ${port}`));
