@@ -16,9 +16,46 @@ const USER = {
   },
 };
 
+const SERVICE = {
+  FIELDS: {
+    ID: '_id',
+    NAME: 'name',
+    PROVIDER_ID: 'providerId',
+    CATEGORY: 'category',
+    PRICE: 'price',
+    DURATION: 'duration',
+    AVERAGE_RATING: 'averageRating',
+    PICTURES: 'pictures',
+  },
+  CATEGORIES: {
+    NAILS: 'NAILS',
+    MAKE_UP: 'MAKE_UP',
+    HAIR: 'HAIR',
+    EYELASHES: 'EYELASHES',
+    EYEBROWS: 'EYEBROWS',
+    FACIALS: 'FACIALS',
+    WAXING: 'WAXING',
+    MASSAGE: 'MASSAGE',
+  },
+  REQUIRED: {
+    NAME: 'Name is required',
+    PROVIDER_ID: 'Provider is required',
+    CATEGORY: 'Category is required',
+    PRICE: 'Price is required',
+  },
+};
+
 const notValidMessage = field => ({ value }) => `${value} is not a valid ${field}`;
+
+const notInEnumMessage = field => ({ value }) =>
+  `\`${value}\` is not a valid enum value for path \`${field}\`.`;
+
+const isNameValid = value => /^[a-zA-Z]+$/.test(value);
 
 module.exports = {
   USER,
+  SERVICE,
   notValidMessage,
+  notInEnumMessage,
+  isNameValid,
 };
