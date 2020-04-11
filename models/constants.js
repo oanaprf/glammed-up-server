@@ -27,7 +27,7 @@ const SERVICE = {
     AVERAGE_RATING: 'averageRating',
     PICTURES: 'pictures',
   },
-  CATEGORIES: {
+  CATEGORY_ENUM: {
     NAILS: 'NAILS',
     MAKE_UP: 'MAKE_UP',
     HAIR: 'HAIR',
@@ -45,6 +45,31 @@ const SERVICE = {
   },
 };
 
+const APPOINTMENT = {
+  FIELDS: {
+    ID: '_id',
+    SERVICE_ID: 'serviceId',
+    PROVIDER_ID: 'providerId',
+    CLIENT_ID: 'clientId',
+    DATE: 'date',
+    STATUS: 'status',
+  },
+  STATUS_ENUM: {
+    PENDING_APPROVAL: 'PENDING_APPROVAL',
+    APPROVED: 'APPROVED',
+    REJECTED: 'REJECTED',
+    COMPLETED: 'COMPLETED',
+    CANCELLED: 'CANCELLED',
+  },
+  REQUIRED: {
+    SERVICE_ID: 'Service is required',
+    PROVIDER_ID: 'Provider is required',
+    CLIENT_ID: 'Client is required',
+    DATE: 'Date is required',
+    STATUS: 'Status is required',
+  },
+};
+
 const notValidMessage = field => ({ value }) => `${value} is not a valid ${field}`;
 
 const notInEnumMessage = field => ({ value }) =>
@@ -55,6 +80,7 @@ const isNameValid = value => /^[a-zA-Z]+$/.test(value);
 module.exports = {
   USER,
   SERVICE,
+  APPOINTMENT,
   notValidMessage,
   notInEnumMessage,
   isNameValid,

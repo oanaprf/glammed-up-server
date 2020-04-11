@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { SERVICE } = require('./constants');
 
-const CATEGORIES_ARRAY = Object.values(SERVICE.CATEGORIES);
+const CATEGORY_ARRAY = Object.values(SERVICE.CATEGORY_ENUM);
 
 const ServiceSchema = new mongoose.Schema({
   [SERVICE.FIELDS.ID]: mongoose.Schema.Types.ObjectId,
@@ -17,7 +17,7 @@ const ServiceSchema = new mongoose.Schema({
   [SERVICE.FIELDS.CATEGORY]: {
     type: String,
     required: [true, SERVICE.REQUIRED.CATEGORY],
-    enum: CATEGORIES_ARRAY,
+    enum: CATEGORY_ARRAY,
   },
   [SERVICE.FIELDS.PRICE]: {
     type: Number,
