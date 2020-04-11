@@ -70,6 +70,25 @@ const APPOINTMENT = {
   },
 };
 
+const REVIEW = {
+  FIELDS: {
+    ID: '_id',
+    SERVICE_ID: 'serviceId',
+    CLIENT_ID: 'clientId',
+    PROVIDER_ID: 'providerId',
+    DATE: 'date',
+    RATING: 'rating',
+    COMMENT: 'comment',
+  },
+  REQUIRED: {
+    SERVICE_ID: 'Service is required',
+    CLIENT_ID: 'Client is required',
+    PROVIDER_ID: 'Provider is required',
+    DATE: 'Date is required',
+    RATING: 'Rating is required',
+  },
+};
+
 const notValidMessage = field => ({ value }) => `${value} is not a valid ${field}`;
 
 const notInEnumMessage = field => ({ value }) =>
@@ -81,6 +100,7 @@ module.exports = {
   USER,
   SERVICE,
   APPOINTMENT,
+  REVIEW,
   notValidMessage,
   notInEnumMessage,
   isNameValid,

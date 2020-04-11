@@ -11,6 +11,8 @@ const UserSchema = new mongoose.Schema({
       message: notValidMessage(USER.FIELDS.FIRST_NAME),
     },
     trim: true,
+    minlength: 3,
+    maxlength: 30,
   },
   [USER.FIELDS.LAST_NAME]: {
     type: String,
@@ -20,6 +22,8 @@ const UserSchema = new mongoose.Schema({
       message: notValidMessage(USER.FIELDS.LAST_NAME),
     },
     trim: true,
+    minlength: 3,
+    maxlength: 20,
   },
   [USER.FIELDS.EMAIL]: {
     type: String,
@@ -30,6 +34,8 @@ const UserSchema = new mongoose.Schema({
       unique: true,
     },
     trim: true,
+    minlength: 5,
+    maxlength: 20,
   },
   [USER.FIELDS.PHONE_NUMBER]: {
     type: String,
@@ -39,7 +45,12 @@ const UserSchema = new mongoose.Schema({
     },
     trim: true,
   },
-  [USER.FIELDS.ADDRESS]: { type: String, trim: true },
+  [USER.FIELDS.ADDRESS]: {
+    type: String,
+    trim: true,
+    minlength: 5,
+    maxlength: 50,
+  },
   [USER.FIELDS.IS_PROVIDER]: { type: Boolean, default: false },
   [USER.FIELDS.PROFILE_PICTURE]: Buffer,
 });

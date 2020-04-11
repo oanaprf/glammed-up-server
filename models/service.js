@@ -28,7 +28,7 @@ const ServiceSchema = new mongoose.Schema({
   [SERVICE.FIELDS.DURATION]: {
     type: Number,
     min: 0,
-    max: 6,
+    max: 360,
   },
   [SERVICE.FIELDS.AVERAGE_RATING]: {
     type: Number,
