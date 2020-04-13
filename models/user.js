@@ -36,6 +36,7 @@ const UserSchema = new mongoose.Schema({
     trim: true,
     minlength: 5,
     maxlength: 20,
+    unique: true,
   },
   [USER.FIELDS.PHONE_NUMBER]: {
     type: String,
