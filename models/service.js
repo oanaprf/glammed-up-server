@@ -17,23 +17,23 @@ const ServiceSchema = new mongoose.Schema({
   [SERVICE.FIELDS.CATEGORY]: {
     type: String,
     required: [true, SERVICE.REQUIRED.CATEGORY],
-    enum: CATEGORY_ARRAY,
+    enum: { values: CATEGORY_ARRAY, message: SERVICE.CATEGORY_NOT_IN_ENUM },
   },
   [SERVICE.FIELDS.PRICE]: {
     type: Number,
     required: [true, SERVICE.REQUIRED.PRICE],
-    min: 0,
-    max: Number.MAX_VALUE,
+    min: [0, SERVICE.MIN.PRICE],
+    max: [Number.MAX_VALUE, SERVICE.MAX.PRICE],
   },
   [SERVICE.FIELDS.DURATION]: {
     type: Number,
-    min: 0,
-    max: 360,
+    min: [0, SERVICE.MIN.DURATION],
+    max: [360, SERVICE.MAX.DURATION],
   },
   [SERVICE.FIELDS.AVERAGE_RATING]: {
     type: Number,
-    min: 0,
-    max: 5,
+    min: [0, SERVICE.MIN.AVERAGE_RATING],
+    max: [5, SERVICE.MAX.AVERAGE_RATING],
   },
   [SERVICE.FIELDS.PICTURES]: [{ type: Buffer }],
 });

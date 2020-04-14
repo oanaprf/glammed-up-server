@@ -1,13 +1,10 @@
 const getOr = require('lodash/fp/getOr');
 const mongoose = require('mongoose');
 const Service = require('./service');
-const { SERVICE, notInEnumMessage } = require('./constants');
+const { SERVICE } = require('./constants');
 
 const getErrorMessage = (field, error) =>
   getOr(undefined, ['errors', field, 'message'], error);
-
-const getErrorActualValue = (field, error) =>
-  getOr(undefined, ['errors', field, 'value'], error);
 
 describe('test service model', () => {
   test('all good', () => {
@@ -74,9 +71,7 @@ describe('test service model', () => {
     });
     const error = service.validateSync();
     expect(getErrorMessage(SERVICE.FIELDS.CATEGORY, error)).toBe(
-      notInEnumMessage(SERVICE.FIELDS.CATEGORY)({
-        value: getErrorActualValue(SERVICE.FIELDS.CATEGORY, error),
-      })
+      SERVICE.CATEGORY_NOT_IN_ENUM
     );
   });
 });

@@ -24,7 +24,7 @@ const AppointmentSchema = new mongoose.Schema({
   [APPOINTMENT.FIELDS.STATUS]: {
     type: String,
     required: [true, APPOINTMENT.REQUIRED.STATUS],
-    enum: STATUS_ARRAY,
+    enum: { values: STATUS_ARRAY, message: APPOINTMENT.STATUS_NOT_IN_ENUM },
   },
 });
 

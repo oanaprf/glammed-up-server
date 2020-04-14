@@ -7,7 +7,7 @@ const admin = require('firebase-admin');
 const getOr = require('lodash/fp/getOr');
 
 const signUpRouter = require('./routes/signUp');
-const { SIGN_UP_ROUTE } = require('./routes/constants');
+const { ROUTES } = require('./routes/constants');
 require('dotenv/config');
 
 const app = express();
@@ -30,7 +30,7 @@ const authMiddleware = (req, res, next) => {
       .verifyIdToken(authToken)
       .then(() => next())
       .catch(() => res.status(403).send('Unauthorized'));
-  } else if (req.method === 'POST' && req.url === SIGN_UP_ROUTE) {
+  } else if (req.method === 'POST' && req.url === ROUTES.SIGN_UP) {
     next();
   } else {
     res.status(403).send('Unauthorized');

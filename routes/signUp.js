@@ -2,13 +2,32 @@ const express = require('express');
 const admin = require('firebase-admin');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const compose = require('lodash/fp/compose');
+const entries = require('lodash/fp/entries');
+const reduce = require('lodash/fp/reduce');
+const getOr = require('lodash/fp/getOr');
 
 const User = require('../models/user');
-const { SIGN_UP_ROUTE } = require('./constants');
+const { USER } = require('../models/constants');
+const { ROUTES, ERRORS } = require('./constants');
 
 const router = express.Router();
 
-router.post(SIGN_UP_ROUTE, (req, res) => {
+const getErrors = getOr({}, 'errors');
+
+const getErrorPayload = compose(
+  reduce(
+    (result, [key, { message }]) => ({
+      ...result,
+      errors: { ...result.errors, [key]: message },
+    }),
+    {}
+  ),
+  entries,
+  getErrors
+);
+
+router.post(ROUTES.SIGN_UP, (req, res) => {
   const { firstName, lastName, email, password } = req.body;
   User.create(
     {
@@ -18,8 +37,15 @@ router.post(SIGN_UP_ROUTE, (req, res) => {
       email,
     },
     (error, mongoUser) => {
-      if (error) res.status(400).send(error);
-      else {
+      if (error) {
+        if (error.code === 11000 && [USER.FIELDS.EMAIL] in error.keyValue) {
+          res.status(400).send({
+            errors: { [USER.FIELDS.EMAIL]: ERRORS.SIGN_UP.EMAIL_ALREADY_EXISTS },
+          });
+        } else {
+          res.status(400).send(getErrorPayload(error));
+        }
+      } else {
         admin
           .auth()
           .createUser({

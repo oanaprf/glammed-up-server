@@ -1,3 +1,8 @@
-const SIGN_UP_ROUTE = '/sign_up';
+const ROUTES = { SIGN_UP: '/sign_up' };
 
-module.exports = { SIGN_UP_ROUTE };
+const ERRORS = {
+  SIGN_UP: {
+    EMAIL_ALREADY_EXISTS: 'EMAIL_ALREADY_EXISTS',
+  },
+};
+module.exports = { ROUTES, ERRORS };

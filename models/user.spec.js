@@ -1,19 +1,16 @@
 const getOr = require('lodash/fp/getOr');
 const User = require('./user');
-const { USER, notValidMessage } = require('./constants');
+const { USER } = require('./constants');
 
-const FIELDS_TO_VALIDATE = [
-  USER.FIELDS.FIRST_NAME,
-  USER.FIELDS.LAST_NAME,
-  USER.FIELDS.EMAIL,
-  USER.FIELDS.PHONE_NUMBER,
-];
+const FIELDS_TO_VALIDATE = {
+  FIRST_NAME: USER.FIELDS.FIRST_NAME,
+  LAST_NAME: USER.FIELDS.LAST_NAME,
+  EMAIL: USER.FIELDS.EMAIL,
+  PHONE_NUMBER: USER.FIELDS.PHONE_NUMBER,
+};
 
 const getErrorMessage = (field, error) =>
   getOr(undefined, ['errors', field, 'message'], error);
-
-const getErrorActualValue = (field, error) =>
-  getOr(undefined, ['errors', field, 'value'], error);
 
 describe('test user model', () => {
   test('all good', () => {
@@ -35,12 +32,8 @@ describe('test user model', () => {
       phoneNumber: '07123',
     });
     const error = user.validateSync();
-    FIELDS_TO_VALIDATE.forEach(field =>
-      expect(getErrorMessage(field, error)).toBe(
-        notValidMessage(field)({
-          value: getErrorActualValue(field, error),
-        })
-      )
+    Object.entries(FIELDS_TO_VALIDATE).forEach(([key, value]) =>
+      expect(getErrorMessage(value, error)).toBe(USER.NOT_VALID[key])
     );
   });
 
@@ -83,9 +76,7 @@ describe('test user model', () => {
     });
     const error = user.validateSync();
     expect(getErrorMessage(USER.FIELDS.FIRST_NAME, error)).toBe(
-      notValidMessage(USER.FIELDS.FIRST_NAME)({
-        value: getErrorActualValue(USER.FIELDS.FIRST_NAME, error),
-      })
+      USER.NOT_VALID.FIRST_NAME
     );
   });
 
@@ -97,11 +88,7 @@ describe('test user model', () => {
       phoneNumber: '0712345678',
     });
     const error = user.validateSync();
-    expect(getErrorMessage(USER.FIELDS.LAST_NAME, error)).toBe(
-      notValidMessage(USER.FIELDS.LAST_NAME)({
-        value: getErrorActualValue(USER.FIELDS.LAST_NAME, error),
-      })
-    );
+    expect(getErrorMessage(USER.FIELDS.LAST_NAME, error)).toBe(USER.NOT_VALID.LAST_NAME);
   });
 
   test('email not valid', () => {
@@ -112,11 +99,7 @@ describe('test user model', () => {
       phoneNumber: '0712345678',
     });
     const error = user.validateSync();
-    expect(getErrorMessage(USER.FIELDS.EMAIL, error)).toBe(
-      notValidMessage(USER.FIELDS.EMAIL)({
-        value: getErrorActualValue(USER.FIELDS.EMAIL, error),
-      })
-    );
+    expect(getErrorMessage(USER.FIELDS.EMAIL, error)).toBe(USER.NOT_VALID.EMAIL);
   });
 
   test('phoneNumber number not valid', () => {
@@ -128,9 +111,7 @@ describe('test user model', () => {
     });
     const error = user.validateSync();
     expect(getErrorMessage(USER.FIELDS.PHONE_NUMBER, error)).toBe(
-      notValidMessage(USER.FIELDS.PHONE_NUMBER)({
-        value: getErrorActualValue(USER.FIELDS.PHONE_NUMBER, error),
-      })
+      USER.NOT_VALID.PHONE_NUMBER
     );
   });
 });

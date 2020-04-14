@@ -10,9 +10,27 @@ const USER = {
     PROFILE_PICTURE: 'profilePicture',
   },
   REQUIRED: {
-    FIRST_NAME: 'First name is required',
-    LAST_NAME: 'First name is required',
-    EMAIL: 'Email is required',
+    FIRST_NAME: 'FIRST_NAME_REQUIRED',
+    LAST_NAME: 'LAST_NAME_REQUIRED',
+    EMAIL: 'EMAIL_REQUIRED',
+  },
+  NOT_VALID: {
+    FIRST_NAME: 'FIRST_NAME_NOT_VALID',
+    LAST_NAME: 'LAST_NAME_NOT_VALID',
+    EMAIL: 'EMAIL_NOT_VALID',
+    PHONE_NUMBER: 'PHONE_NUMBER_NOT_VALID',
+  },
+  MIN_LENGTH: {
+    FIRST_NAME: 'FIRST_NAME_TOO_SHORT',
+    LAST_NAME: 'LAST_NAME_TOO_SHORT',
+    EMAIL: 'EMAIL_TOO_SHORT',
+    ADDRESS: 'ADDRESS_TOO_SHORT',
+  },
+  MAX_LENGTH: {
+    FIRST_NAME: 'FIRST_NAME_TOO_LONG',
+    LAST_NAME: 'LAST_NAME_TOO_LONG',
+    EMAIL: 'EMAIL_TOO_LONG',
+    ADDRESS: 'ADDRESS_TOO_LONG',
   },
 };
 
@@ -38,10 +56,21 @@ const SERVICE = {
     MASSAGE: 'MASSAGE',
   },
   REQUIRED: {
-    NAME: 'Name is required',
-    PROVIDER_ID: 'Provider is required',
-    CATEGORY: 'Category is required',
-    PRICE: 'Price is required',
+    NAME: 'NAME_REQUIRED',
+    PROVIDER_ID: 'PROVIDER_REQUIRED',
+    CATEGORY: 'CATEGORY_REQUIRED',
+    PRICE: 'PRICE_REQUIRED',
+  },
+  CATEGORY_NOT_IN_ENUM: 'CATEGORY_NOT_IN_ENUM',
+  MIN: {
+    PRICE: 'PRICE_TOO_SMALL',
+    DURATION: 'DURATION_TOO_SMALL',
+    AVERAGE_RATING: 'AVERAGE_RATING_TOO_SMALL',
+  },
+  MAX: {
+    PRICE: 'PRICE_TOO_BIG',
+    DURATION: 'DURATION_TOO_BIG',
+    AVERAGE_RATING: 'AVERAGE_RATING_TOO_BIG',
   },
 };
 
@@ -62,12 +91,13 @@ const APPOINTMENT = {
     CANCELLED: 'CANCELLED',
   },
   REQUIRED: {
-    SERVICE_ID: 'Service is required',
-    PROVIDER_ID: 'Provider is required',
-    CLIENT_ID: 'Client is required',
-    DATE: 'Date is required',
-    STATUS: 'Status is required',
+    SERVICE_ID: 'SERVICE_REQUIRED',
+    PROVIDER_ID: 'PROVIDER_REQUIRED',
+    CLIENT_ID: 'CLIENT_REQUIRED',
+    DATE: 'DATE_REQUIRED',
+    STATUS: 'STATUS_REQUIRED',
   },
+  STATUS_NOT_IN_ENUM: 'STATUS_NOT_IN_ENUM',
 };
 
 const REVIEW = {
@@ -81,18 +111,21 @@ const REVIEW = {
     COMMENT: 'comment',
   },
   REQUIRED: {
-    SERVICE_ID: 'Service is required',
-    CLIENT_ID: 'Client is required',
-    PROVIDER_ID: 'Provider is required',
-    DATE: 'Date is required',
-    RATING: 'Rating is required',
+    SERVICE_ID: 'SERVICE_REQUIRED',
+    CLIENT_ID: 'CLIENT_REQUIRED',
+    PROVIDER_ID: 'PROVIDER_REQUIRED',
+    DATE: 'DATE_REQUIRED',
+    RATING: 'RATING_REQUIRED',
   },
+  MIN: {
+    RATING: 'RATING_TOO_SMALL',
+  },
+  MAX: {
+    RATING: 'RATING_TOO_BIG',
+  },
+  MIN_LENGTH: { COMMENT: 'COMMENT_TOO_SHORT' },
+  MAX_LENGTH: { COMMENT: 'COMMENT_TOO_LONG' },
 };
-
-const notValidMessage = field => ({ value }) => `${value} is not a valid ${field}`;
-
-const notInEnumMessage = field => ({ value }) =>
-  `\`${value}\` is not a valid enum value for path \`${field}\`.`;
 
 const isNameValid = value => /^[a-zA-Z]+$/.test(value);
 
@@ -101,7 +134,5 @@ module.exports = {
   SERVICE,
   APPOINTMENT,
   REVIEW,
-  notValidMessage,
-  notInEnumMessage,
   isNameValid,
 };

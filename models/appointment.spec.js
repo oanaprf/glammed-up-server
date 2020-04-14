@@ -1,13 +1,10 @@
 const mongoose = require('mongoose');
 const getOr = require('lodash/fp/getOr');
 const Appointment = require('./appointment');
-const { APPOINTMENT, notInEnumMessage } = require('./constants');
+const { APPOINTMENT } = require('./constants');
 
 const getErrorMessage = (field, error) =>
   getOr(undefined, ['errors', field, 'message'], error);
-
-const getErrorActualValue = (field, error) =>
-  getOr(undefined, ['errors', field, 'value'], error);
 
 describe('test appointment model', () => {
   test('all good', () => {
@@ -97,9 +94,7 @@ describe('test appointment model', () => {
     });
     const error = appointment.validateSync();
     expect(getErrorMessage(APPOINTMENT.FIELDS.STATUS, error)).toBe(
-      notInEnumMessage(APPOINTMENT.FIELDS.STATUS)({
-        value: getErrorActualValue(APPOINTMENT.FIELDS.STATUS, error),
-      })
+      APPOINTMENT.STATUS_NOT_IN_ENUM
     );
   });
 });

@@ -22,13 +22,13 @@ const ReviewSchema = new mongoose.Schema({
   [REVIEW.FIELDS.RATING]: {
     type: Number,
     required: [true, REVIEW.REQUIRED.RATING],
-    min: 0,
-    max: 5,
+    min: [0, REVIEW.MIN.RATING],
+    max: [5, REVIEW.MAX.RATING],
   },
   [REVIEW.FIELDS.COMMENT]: {
     type: String,
-    minLength: 3,
-    maxLength: 100,
+    minLength: [3, REVIEW.MIN_LENGTH.COMMENT],
+    maxLength: [100, REVIEW.MAX_LENGTH.COMMENT],
     trim: true,
   },
 });
