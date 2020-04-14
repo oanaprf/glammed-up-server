@@ -8,6 +8,8 @@ const compose = require('lodash/fp/compose');
 const entries = require('lodash/fp/entries');
 const reduce = require('lodash/fp/reduce');
 const getOr = require('lodash/fp/getOr');
+const isEqual = require('lodash/fp/isEqual');
+const isEmpty = require('lodash/fp/isEmpty');
 
 const User = require('../models/user');
 const { USER } = require('../models/constants');
@@ -16,7 +18,6 @@ const { ROUTES, SUCCESS, ERROR } = require('./constants');
 const router = express.Router();
 
 const getErrors = getOr({}, 'errors');
-
 const getPostErrorPayload = compose(
   reduce(
     (result, [key, { message }]) => ({
@@ -29,14 +30,23 @@ const getPostErrorPayload = compose(
   getErrors
 );
 
+const getBody = getOr({}, 'body');
 const getParams = getOr({}, 'params');
-
 const getId = compose(getOr('', 'id'), getParams);
+
+const getObjectDiff = (obj1, obj2) =>
+  Object.entries(obj2).reduce(
+    (res, [key, value]) => ({
+      ...res,
+      ...(!isEqual(value, obj1[key]) && { [key]: value }),
+    }),
+    {}
+  );
 
 router.get(`${ROUTES.USER}/:id`, (req, res) => {
   const id = getId(req);
   if (ObjectId.isValid(id)) {
-    User.findById(ObjectId(id), (err, user) => {
+    User.findById(id, (err, user) => {
       if (err) res.status(400).send(err);
       else if (user) res.status(200).send(user);
       else res.status(404).send({ error: ERROR.USER.USER_NOT_FOUND });
@@ -77,6 +87,49 @@ router.post(ROUTES.USER, (req, res) => {
       }
     }
   );
+});
+
+router.put(`${ROUTES.USER}/:id`, (req, res) => {
+  const id = getId(req);
+  if (ObjectId.isValid(id)) {
+    const updatedUser = getBody(req);
+    User.findById(id)
+      .then(userToBeUpdated => {
+        const changes = getObjectDiff(userToBeUpdated, updatedUser);
+        if (!isEmpty(changes)) {
+          Object.assign(userToBeUpdated, changes);
+          userToBeUpdated
+            .save()
+            .then(() => {
+              if (USER.FIELDS.EMAIL in changes) {
+                admin
+                  .auth()
+                  .updateUser(id, { email: changes.email })
+                  .then(user => {
+                    if (user) {
+                      res
+                        .status(200)
+                        .send({ message: SUCCESS.USER.USER_SUCCESSFULLY_UPDATED });
+                    }
+                  })
+                  .catch(err => res.status(400).send(err));
+              } else {
+                res.status(200).send({ message: SUCCESS.USER.USER_SUCCESSFULLY_UPDATED });
+              }
+            })
+            .catch(error => {
+              if (error.code === 11000 && [USER.FIELDS.EMAIL] in error.keyValue) {
+                res.status(400).send({
+                  errors: { [USER.FIELDS.EMAIL]: ERROR.USER.EMAIL_ALREADY_EXISTS },
+                });
+              } else {
+                res.status(400).send(getPostErrorPayload(error));
+              }
+            });
+        }
+      })
+      .catch(() => res.status(404).send({ error: ERROR.USER.USER_NOT_FOUND }));
+  } else res.status(400).send({ error: ERROR.USER.USER_ID_NOT_VALID });
 });
 
 module.exports = router;
