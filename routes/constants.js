@@ -1,8 +1,20 @@
-const ROUTES = { SIGN_UP: '/sign_up' };
+const ROUTES = { USER: '/user' };
 
-const ERRORS = {
-  SIGN_UP: {
-    EMAIL_ALREADY_EXISTS: 'EMAIL_ALREADY_EXISTS',
+const SUCCESS = {
+  USER: {
+    USER_SUCCESSFULLY_CREATED: 'USER_SUCCESSFULLY_CREATED',
   },
 };
-module.exports = { ROUTES, ERRORS };
+
+const ERROR = {
+  APP: {
+    UNAUTHORIZED: 'UNAUTHORIZED',
+  },
+  USER: {
+    EMAIL_ALREADY_EXISTS: 'EMAIL_ALREADY_EXISTS',
+    USER_NOT_FOUND: 'USER_NOT_FOUND',
+    USER_ID_NOT_VALID: 'USER_ID_NOT_VALID',
+  },
+};
+
+module.exports = { ROUTES, SUCCESS, ERROR };

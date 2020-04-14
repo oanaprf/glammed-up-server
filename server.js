@@ -6,8 +6,8 @@ const mongoose = require('mongoose');
 const admin = require('firebase-admin');
 const getOr = require('lodash/fp/getOr');
 
-const signUpRouter = require('./routes/signUp');
-const { ROUTES } = require('./routes/constants');
+const userRouter = require('./routes/user');
+const { ROUTES, ERROR } = require('./routes/constants');
 require('dotenv/config');
 
 const app = express();
@@ -29,11 +29,11 @@ const authMiddleware = (req, res, next) => {
       .auth()
       .verifyIdToken(authToken)
       .then(() => next())
-      .catch(() => res.status(403).send('Unauthorized'));
-  } else if (req.method === 'POST' && req.url === ROUTES.SIGN_UP) {
+      .catch(() => res.status(403).send({ error: ERROR.APP.UNAUTHORIZED }));
+  } else if (req.method === 'POST' && req.url === ROUTES.USER) {
     next();
   } else {
-    res.status(403).send('Unauthorized');
+    res.status(403).send({ error: ERROR.APP.UNAUTHORIZED });
   }
 };
 
@@ -41,7 +41,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
 app.use(authMiddleware);
-app.use(signUpRouter);
+app.use(userRouter);
 
 mongoose
   .connect(process.env.MONGODB_URI, {
