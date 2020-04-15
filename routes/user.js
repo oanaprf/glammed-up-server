@@ -79,7 +79,9 @@ router.post(ROUTES.USER, (req, res) => {
           email,
           password: bcrypt.hashSync(password, 12),
         })
-        .then(() => res.status(201).send({ message: SUCCESS.USER.USER_SUCCESSFULLY_CREATED }))
+        .then(() =>
+          res.status(201).send({ message: SUCCESS.USER.USER_SUCCESSFULLY_CREATED, user: mongoUser })
+        )
         .catch(firebaseError => res.status(400).send(firebaseError))
     )
     .catch(mongoError => treatError(res, mongoError));
@@ -103,13 +105,22 @@ router.put(`${ROUTES.USER}/:id`, (req, res) => {
                   .updateUser(id, { email: changes.email })
                   .then(user => {
                     if (user) {
-                      res.status(200).send({ message: SUCCESS.USER.USER_SUCCESSFULLY_UPDATED });
+                      res.status(200).send({
+                        message: SUCCESS.USER.USER_SUCCESSFULLY_UPDATED,
+                        user: userToBeUpdated,
+                      });
                     }
                   })
                   .catch(firebaseError => res.status(400).send(firebaseError));
-              } else res.status(200).send({ message: SUCCESS.USER.USER_SUCCESSFULLY_UPDATED });
+              } else {
+                res
+                  .status(200)
+                  .send({ message: SUCCESS.USER.USER_SUCCESSFULLY_UPDATED, userToBeUpdated });
+              }
             })
             .catch(mongoError => treatError(res, mongoError));
+        } else {
+          res.status(200).send({ message: SUCCESS.USER.USER_NOT_CHANGED, user: userToBeUpdated });
         }
       })
       .catch(() => res.status(404).send({ error: ERROR.USER.USER_NOT_FOUND }));
