@@ -20,14 +20,15 @@
       "comma-dangle": "off",
       "function-paren-newline": "off",
       "object-curly-newline": "off",
-      "no-underscore-dangle": "off"
+      "no-underscore-dangle": "off",
+      "operator-linebreak": "off"
     },
     "env": {
       "jest": true
     }
   },
   "prettier": {
-    "printWidth": 90,
+    "printWidth": 100,
     "trailingComma": "es5",
     "singleQuote": true,
     "arrowParens": "avoid"

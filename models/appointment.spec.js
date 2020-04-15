@@ -3,8 +3,7 @@ const getOr = require('lodash/fp/getOr');
 const Appointment = require('./appointment');
 const { APPOINTMENT } = require('./constants');
 
-const getErrorMessage = (field, error) =>
-  getOr(undefined, ['errors', field, 'message'], error);
+const getErrorMessage = (field, error) => getOr(undefined, ['errors', field, 'message'], error);
 
 describe('test appointment model', () => {
   test('all good', () => {
@@ -66,9 +65,7 @@ describe('test appointment model', () => {
       status: 'APPROVED',
     });
     const error = appointment.validateSync();
-    expect(getErrorMessage(APPOINTMENT.FIELDS.DATE, error)).toBe(
-      APPOINTMENT.REQUIRED.DATE
-    );
+    expect(getErrorMessage(APPOINTMENT.FIELDS.DATE, error)).toBe(APPOINTMENT.REQUIRED.DATE);
   });
 
   test('status required', () => {
@@ -79,9 +76,7 @@ describe('test appointment model', () => {
       date: Date.now(),
     });
     const error = appointment.validateSync();
-    expect(getErrorMessage(APPOINTMENT.FIELDS.STATUS, error)).toBe(
-      APPOINTMENT.REQUIRED.STATUS
-    );
+    expect(getErrorMessage(APPOINTMENT.FIELDS.STATUS, error)).toBe(APPOINTMENT.REQUIRED.STATUS);
   });
 
   test('status not in enum', () => {
@@ -93,8 +88,6 @@ describe('test appointment model', () => {
       status: 'TEST',
     });
     const error = appointment.validateSync();
-    expect(getErrorMessage(APPOINTMENT.FIELDS.STATUS, error)).toBe(
-      APPOINTMENT.STATUS_NOT_IN_ENUM
-    );
+    expect(getErrorMessage(APPOINTMENT.FIELDS.STATUS, error)).toBe(APPOINTMENT.STATUS_NOT_IN_ENUM);
   });
 });

@@ -43,6 +43,18 @@ const getObjectDiff = (obj1, obj2) =>
     {}
   );
 
+const emailAlreadyExistsError = {
+  errors: { [USER.FIELDS.EMAIL]: ERROR.USER.EMAIL_ALREADY_EXISTS },
+};
+const treatError = (res, error) =>
+  res
+    .status(400)
+    .send(
+      error.code === 11000 && [USER.FIELDS.EMAIL] in error.keyValue
+        ? emailAlreadyExistsError
+        : getPostErrorPayload(error)
+    );
+
 router.get(`${ROUTES.USER}/:id`, (req, res) => {
   const id = getId(req);
   if (ObjectId.isValid(id)) {
@@ -56,37 +68,21 @@ router.get(`${ROUTES.USER}/:id`, (req, res) => {
 
 router.post(ROUTES.USER, (req, res) => {
   const { firstName, lastName, email, password } = req.body;
-  User.create(
-    {
-      _id: new ObjectId(),
-      firstName,
-      lastName,
-      email,
-    },
-    (error, mongoUser) => {
-      if (error) {
-        if (error.code === 11000 && [USER.FIELDS.EMAIL] in error.keyValue) {
-          res.status(400).send({
-            errors: { [USER.FIELDS.EMAIL]: ERROR.USER.EMAIL_ALREADY_EXISTS },
-          });
-        } else {
-          res.status(400).send(getPostErrorPayload(error));
-        }
-      } else {
-        admin
-          .auth()
-          .createUser({
-            uid: `${mongoUser._id}`,
-            email,
-            password: bcrypt.hashSync(password, 12),
-          })
-          .then(() =>
-            res.status(201).send({ message: SUCCESS.USER.USER_SUCCESSFULLY_CREATED })
-          )
-          .catch(err => res.status(400).send(err));
-      }
-    }
-  );
+  const user = new User({ _id: new ObjectId(), firstName, lastName, email });
+  user
+    .save()
+    .then(mongoUser =>
+      admin
+        .auth()
+        .createUser({
+          uid: `${mongoUser._id}`,
+          email,
+          password: bcrypt.hashSync(password, 12),
+        })
+        .then(() => res.status(201).send({ message: SUCCESS.USER.USER_SUCCESSFULLY_CREATED }))
+        .catch(firebaseError => res.status(400).send(firebaseError))
+    )
+    .catch(mongoError => treatError(res, mongoError));
 });
 
 router.put(`${ROUTES.USER}/:id`, (req, res) => {
@@ -107,25 +103,13 @@ router.put(`${ROUTES.USER}/:id`, (req, res) => {
                   .updateUser(id, { email: changes.email })
                   .then(user => {
                     if (user) {
-                      res
-                        .status(200)
-                        .send({ message: SUCCESS.USER.USER_SUCCESSFULLY_UPDATED });
+                      res.status(200).send({ message: SUCCESS.USER.USER_SUCCESSFULLY_UPDATED });
                     }
                   })
-                  .catch(err => res.status(400).send(err));
-              } else {
-                res.status(200).send({ message: SUCCESS.USER.USER_SUCCESSFULLY_UPDATED });
-              }
+                  .catch(firebaseError => res.status(400).send(firebaseError));
+              } else res.status(200).send({ message: SUCCESS.USER.USER_SUCCESSFULLY_UPDATED });
             })
-            .catch(error => {
-              if (error.code === 11000 && [USER.FIELDS.EMAIL] in error.keyValue) {
-                res.status(400).send({
-                  errors: { [USER.FIELDS.EMAIL]: ERROR.USER.EMAIL_ALREADY_EXISTS },
-                });
-              } else {
-                res.status(400).send(getPostErrorPayload(error));
-              }
-            });
+            .catch(mongoError => treatError(res, mongoError));
         }
       })
       .catch(() => res.status(404).send({ error: ERROR.USER.USER_NOT_FOUND }));

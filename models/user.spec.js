@@ -9,8 +9,7 @@ const FIELDS_TO_VALIDATE = {
   PHONE_NUMBER: USER.FIELDS.PHONE_NUMBER,
 };
 
-const getErrorMessage = (field, error) =>
-  getOr(undefined, ['errors', field, 'message'], error);
+const getErrorMessage = (field, error) => getOr(undefined, ['errors', field, 'message'], error);
 
 describe('test user model', () => {
   test('all good', () => {
@@ -75,9 +74,7 @@ describe('test user model', () => {
       phoneNumber: '0712345678',
     });
     const error = user.validateSync();
-    expect(getErrorMessage(USER.FIELDS.FIRST_NAME, error)).toBe(
-      USER.NOT_VALID.FIRST_NAME
-    );
+    expect(getErrorMessage(USER.FIELDS.FIRST_NAME, error)).toBe(USER.NOT_VALID.FIRST_NAME);
   });
 
   test('last name not valid', () => {
@@ -110,8 +107,6 @@ describe('test user model', () => {
       phoneNumber: '0712',
     });
     const error = user.validateSync();
-    expect(getErrorMessage(USER.FIELDS.PHONE_NUMBER, error)).toBe(
-      USER.NOT_VALID.PHONE_NUMBER
-    );
+    expect(getErrorMessage(USER.FIELDS.PHONE_NUMBER, error)).toBe(USER.NOT_VALID.PHONE_NUMBER);
   });
 });

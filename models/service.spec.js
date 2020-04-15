@@ -3,8 +3,7 @@ const mongoose = require('mongoose');
 const Service = require('./service');
 const { SERVICE } = require('./constants');
 
-const getErrorMessage = (field, error) =>
-  getOr(undefined, ['errors', field, 'message'], error);
+const getErrorMessage = (field, error) => getOr(undefined, ['errors', field, 'message'], error);
 
 describe('test service model', () => {
   test('all good', () => {
@@ -35,9 +34,7 @@ describe('test service model', () => {
       price: 25.5,
     });
     const error = service.validateSync();
-    expect(getErrorMessage(SERVICE.FIELDS.PROVIDER_ID, error)).toBe(
-      SERVICE.REQUIRED.PROVIDER_ID
-    );
+    expect(getErrorMessage(SERVICE.FIELDS.PROVIDER_ID, error)).toBe(SERVICE.REQUIRED.PROVIDER_ID);
   });
 
   test('category required', () => {
@@ -47,9 +44,7 @@ describe('test service model', () => {
       price: 25.5,
     });
     const error = service.validateSync();
-    expect(getErrorMessage(SERVICE.FIELDS.CATEGORY, error)).toBe(
-      SERVICE.REQUIRED.CATEGORY
-    );
+    expect(getErrorMessage(SERVICE.FIELDS.CATEGORY, error)).toBe(SERVICE.REQUIRED.CATEGORY);
   });
 
   test('price required', () => {
@@ -70,8 +65,6 @@ describe('test service model', () => {
       price: 25.5,
     });
     const error = service.validateSync();
-    expect(getErrorMessage(SERVICE.FIELDS.CATEGORY, error)).toBe(
-      SERVICE.CATEGORY_NOT_IN_ENUM
-    );
+    expect(getErrorMessage(SERVICE.FIELDS.CATEGORY, error)).toBe(SERVICE.CATEGORY_NOT_IN_ENUM);
   });
 });

@@ -3,8 +3,7 @@ const getOr = require('lodash/fp/getOr');
 const Review = require('./review');
 const { REVIEW } = require('./constants');
 
-const getErrorMessage = (field, error) =>
-  getOr(undefined, ['errors', field, 'message'], error);
+const getErrorMessage = (field, error) => getOr(undefined, ['errors', field, 'message'], error);
 
 describe('test review model', () => {
   test('all good', () => {
@@ -29,9 +28,7 @@ describe('test review model', () => {
       rating: 4,
     });
     const error = review.validateSync();
-    expect(getErrorMessage(REVIEW.FIELDS.SERVICE_ID, error)).toBe(
-      REVIEW.REQUIRED.SERVICE_ID
-    );
+    expect(getErrorMessage(REVIEW.FIELDS.SERVICE_ID, error)).toBe(REVIEW.REQUIRED.SERVICE_ID);
   });
 
   test('client required', () => {
@@ -43,9 +40,7 @@ describe('test review model', () => {
       rating: 4,
     });
     const error = review.validateSync();
-    expect(getErrorMessage(REVIEW.FIELDS.CLIENT_ID, error)).toBe(
-      REVIEW.REQUIRED.CLIENT_ID
-    );
+    expect(getErrorMessage(REVIEW.FIELDS.CLIENT_ID, error)).toBe(REVIEW.REQUIRED.CLIENT_ID);
   });
 
   test('provider required', () => {
@@ -57,9 +52,7 @@ describe('test review model', () => {
       rating: 4,
     });
     const error = review.validateSync();
-    expect(getErrorMessage(REVIEW.FIELDS.PROVIDER_ID, error)).toBe(
-      REVIEW.REQUIRED.PROVIDER_ID
-    );
+    expect(getErrorMessage(REVIEW.FIELDS.PROVIDER_ID, error)).toBe(REVIEW.REQUIRED.PROVIDER_ID);
   });
 
   test('date required', () => {
