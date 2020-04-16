@@ -4,44 +4,13 @@ const {
   Types: { ObjectId },
 } = require('mongoose');
 const bcrypt = require('bcrypt');
-const compose = require('lodash/fp/compose');
-const entries = require('lodash/fp/entries');
-const reduce = require('lodash/fp/reduce');
-const getOr = require('lodash/fp/getOr');
-const isEqual = require('lodash/fp/isEqual');
 const isEmpty = require('lodash/fp/isEmpty');
 
 const User = require('../models/user');
 const { USER } = require('../models/constants');
-const { ROUTES, SUCCESS, ERROR } = require('./constants');
+const { ROUTES, SUCCESS, ERROR, getBody, getId, mapErrors, getObjectDiff } = require('./constants');
 
 const router = express.Router();
-
-const getErrors = getOr({}, 'errors');
-const getPostErrorPayload = compose(
-  reduce(
-    (result, [key, { message }]) => ({
-      ...result,
-      errors: { ...result.errors, [key]: message },
-    }),
-    {}
-  ),
-  entries,
-  getErrors
-);
-
-const getBody = getOr({}, 'body');
-const getParams = getOr({}, 'params');
-const getId = compose(getOr('', 'id'), getParams);
-
-const getObjectDiff = (obj1, obj2) =>
-  Object.entries(obj2).reduce(
-    (res, [key, value]) => ({
-      ...res,
-      ...(!isEqual(value, obj1[key]) && { [key]: value }),
-    }),
-    {}
-  );
 
 const emailAlreadyExistsError = {
   errors: { [USER.FIELDS.EMAIL]: ERROR.USER.EMAIL_ALREADY_EXISTS },
@@ -52,7 +21,7 @@ const treatError = (res, error) =>
     .send(
       error.code === 11000 && [USER.FIELDS.EMAIL] in error.keyValue
         ? emailAlreadyExistsError
-        : getPostErrorPayload(error)
+        : mapErrors(error)
     );
 
 router.get(`${ROUTES.USER}/:id`, (req, res) => {

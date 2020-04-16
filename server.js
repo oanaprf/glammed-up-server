@@ -7,6 +7,7 @@ const admin = require('firebase-admin');
 const getOr = require('lodash/fp/getOr');
 
 const userRouter = require('./routes/user');
+const reviewRouter = require('./routes/review');
 const { ROUTES, ERROR } = require('./routes/constants');
 require('dotenv/config');
 
@@ -42,6 +43,7 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(authMiddleware);
 app.use(userRouter);
+app.use(reviewRouter);
 
 mongoose
   .connect(process.env.MONGODB_URI, {
