@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const { REVIEW } = require('./constants');
+const User = require('./user');
+const Service = require('./service');
 
 const ReviewSchema = new mongoose.Schema(
   {
@@ -7,14 +9,17 @@ const ReviewSchema = new mongoose.Schema(
     [REVIEW.FIELDS.SERVICE_ID]: {
       type: mongoose.Schema.Types.ObjectId,
       required: [true, REVIEW.REQUIRED.SERVICE_ID],
+      ref: Service,
     },
     [REVIEW.FIELDS.CLIENT_ID]: {
       type: mongoose.Schema.Types.ObjectId,
       required: [true, REVIEW.REQUIRED.CLIENT_ID],
+      ref: User,
     },
     [REVIEW.FIELDS.PROVIDER_ID]: {
       type: mongoose.Schema.Types.ObjectId,
       required: [true, REVIEW.REQUIRED.PROVIDER_ID],
+      ref: User,
     },
     [REVIEW.FIELDS.DATE]: {
       type: Date,

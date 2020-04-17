@@ -8,7 +8,8 @@ const getOr = require('lodash/fp/getOr');
 
 const userRouter = require('./routes/user');
 const reviewRouter = require('./routes/review');
-const { ROUTES, ERROR } = require('./routes/constants');
+const serviceRouter = require('./routes/service');
+const { ERROR } = require('./routes/constants');
 require('dotenv/config');
 
 const app = express();
@@ -30,8 +31,8 @@ const authMiddleware = (req, res, next) => {
       .auth()
       .verifyIdToken(authToken)
       .then(() => next())
-      .catch(() => res.status(403).send({ error: ERROR.APP.UNAUTHORIZED }));
-  } else if (req.method === 'POST' && req.url === ROUTES.USER) {
+      .catch(() => res.status(401).send({ error: ERROR.APP.UNAUTHORIZED }));
+  } else if (req.method === 'POST' && req.url === '/user') {
     next();
   } else {
     res.status(403).send({ error: ERROR.APP.UNAUTHORIZED });
@@ -44,11 +45,13 @@ app.use(cors());
 app.use(authMiddleware);
 app.use(userRouter);
 app.use(reviewRouter);
+app.use(serviceRouter);
 
 mongoose
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false,
   })
   .catch(err => console.error(err));
 mongoose.connection.on('error', err => {

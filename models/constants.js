@@ -54,6 +54,7 @@ const SERVICE = {
     FACIALS: 'FACIALS',
     WAXING: 'WAXING',
     MASSAGE: 'MASSAGE',
+    OTHER: 'OTHER',
   },
   REQUIRED: {
     NAME: 'NAME_REQUIRED',

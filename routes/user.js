@@ -8,7 +8,7 @@ const isEmpty = require('lodash/fp/isEmpty');
 
 const User = require('../models/user');
 const { USER } = require('../models/constants');
-const { ROUTES, SUCCESS, ERROR, getBody, getId, mapErrors, getObjectDiff } = require('./constants');
+const { SUCCESS, ERROR, getBody, getId, mapErrors, getObjectDiff } = require('./constants');
 
 const router = express.Router();
 
@@ -24,19 +24,20 @@ const treatError = (res, error) =>
         : mapErrors(error)
     );
 
-router.get(`${ROUTES.USER}/:id`, (req, res) => {
+router.get('/user/:id', (req, res) => {
   const id = getId(req);
   if (ObjectId.isValid(id)) {
-    User.findById(id, (err, user) => {
-      if (err) res.status(400).send(err);
-      else if (user) res.status(200).send(user);
-      else res.status(404).send({ error: ERROR.USER.USER_NOT_FOUND });
-    });
+    User.findById(id)
+      .then(user => {
+        if (user) res.status(200).send(user);
+        else res.status(404).send({ error: ERROR.USER.USER_NOT_FOUND });
+      })
+      .catch(error => res.status(400).send(error));
   } else res.status(400).send({ error: ERROR.USER.USER_ID_NOT_VALID });
 });
 
-router.post(ROUTES.USER, (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
+router.post('/user', (req, res) => {
+  const { firstName, lastName, email, password } = getBody(req);
   const user = new User({ _id: new ObjectId(), firstName, lastName, email });
   user
     .save()
@@ -56,7 +57,7 @@ router.post(ROUTES.USER, (req, res) => {
     .catch(mongoError => treatError(res, mongoError));
 });
 
-router.put(`${ROUTES.USER}/:id`, (req, res) => {
+router.put('/user/:id', (req, res) => {
   const id = getId(req);
   if (ObjectId.isValid(id)) {
     const updatedUser = getBody(req);

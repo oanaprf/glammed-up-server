@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const { APPOINTMENT } = require('./constants');
+const User = require('./user');
+const Service = require('./service');
 
 const STATUS_ARRAY = Object.values(APPOINTMENT.STATUS_ENUM);
 
@@ -9,14 +11,17 @@ const AppointmentSchema = new mongoose.Schema(
     [APPOINTMENT.FIELDS.SERVICE_ID]: {
       type: mongoose.Schema.Types.ObjectId,
       required: [true, APPOINTMENT.REQUIRED.SERVICE_ID],
+      ref: Service,
     },
     [APPOINTMENT.FIELDS.PROVIDER_ID]: {
       type: mongoose.Schema.Types.ObjectId,
       required: [true, APPOINTMENT.REQUIRED.PROVIDER_ID],
+      ref: User,
     },
     [APPOINTMENT.FIELDS.CLIENT_ID]: {
       type: mongoose.Schema.Types.ObjectId,
       required: [true, APPOINTMENT.REQUIRED.CLIENT_ID],
+      ref: User,
     },
     [APPOINTMENT.FIELDS.DATE]: {
       type: Date,

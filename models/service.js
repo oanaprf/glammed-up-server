@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { SERVICE } = require('./constants');
+const User = require('./user');
 
 const CATEGORY_ARRAY = Object.values(SERVICE.CATEGORY_ENUM);
 
@@ -14,6 +15,7 @@ const ServiceSchema = new mongoose.Schema(
     [SERVICE.FIELDS.PROVIDER_ID]: {
       type: mongoose.Schema.Types.ObjectId,
       required: [true, SERVICE.REQUIRED.PROVIDER_ID],
+      ref: User,
     },
     [SERVICE.FIELDS.CATEGORY]: {
       type: String,
