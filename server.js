@@ -6,10 +6,10 @@ const mongoose = require('mongoose');
 const admin = require('firebase-admin');
 const getOr = require('lodash/fp/getOr');
 
-const userRouter = require('./routes/user');
-const reviewRouter = require('./routes/review');
-const serviceRouter = require('./routes/service');
-const { ERROR } = require('./routes/constants');
+const userRouter = require('./api/routes/user');
+const reviewRouter = require('./api/routes/review');
+const serviceRouter = require('./api/routes/service');
+const { ERROR } = require('./api/routes/constants');
 require('dotenv/config');
 
 const app = express();
