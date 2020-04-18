@@ -1,15 +1,8 @@
 const express = require('express');
-
-const Review = require('../models/review');
-const { getId } = require('./constants');
+const reviewController = require('../controllers/review');
 
 const router = express.Router();
 
-router.get('client/:id/reviews', (req, res) => {
-  const clientId = getId(req);
-  Review.find({ clientId })
-    .then(reviews => res.status(200).send(reviews))
-    .catch(error => res.status(400).send(error));
-});
+router.get('/client/:id/reviews', reviewController.getReviewsByClient);
 
 module.exports = router;
