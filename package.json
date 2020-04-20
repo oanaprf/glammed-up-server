@@ -21,7 +21,8 @@
       "function-paren-newline": "off",
       "object-curly-newline": "off",
       "no-underscore-dangle": "off",
-      "operator-linebreak": "off"
+      "operator-linebreak": "off",
+      "no-confusing-arrow": "off"
     },
     "env": {
       "jest": true

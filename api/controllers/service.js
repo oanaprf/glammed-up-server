@@ -1,7 +1,7 @@
 const {
   Types: { ObjectId },
 } = require('mongoose');
-const omitBy = require('lodash/fp/omitBy');
+const omit = require('lodash/fp/omit');
 const compose = require('lodash/fp/compose');
 
 const Service = require('../models/service');
@@ -17,7 +17,7 @@ const {
 } = require('../models/constants');
 const { ERROR, SUCCESS, getQueryParams, getId, getBody, mapErrors } = require('./constants');
 
-const getServiceWithoutProvider = compose(omitBy('providerId'), getBody);
+const getServiceWithoutProvider = compose(omit('providerId'), getBody);
 const providerFields = `${FIRST_NAME} ${LAST_NAME} ${PHONE_NUMBER} ${ADDRESS}`;
 
 const getServices = (_, res) => {
