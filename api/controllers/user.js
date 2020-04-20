@@ -12,7 +12,7 @@ const { SUCCESS, ERROR, getBody, getId, mapErrors, getObjectDiff } = require('./
 const emailAlreadyExistsError = {
   errors: { [USER.FIELDS.EMAIL]: ERROR.USER.EMAIL_ALREADY_EXISTS },
 };
-const treatError = (res, error) =>
+const treatErrors = (res, error) =>
   res
     .status(400)
     .send(
@@ -51,7 +51,7 @@ const createUser = (req, res) => {
         )
         .catch(firebaseError => res.status(400).send(firebaseError))
     )
-    .catch(mongoError => treatError(res, mongoError));
+    .catch(mongoError => treatErrors(res, mongoError));
 };
 
 const updateUser = (req, res) => {
@@ -85,7 +85,7 @@ const updateUser = (req, res) => {
                   .send({ message: SUCCESS.USER.USER_SUCCESSFULLY_UPDATED, userToBeUpdated });
               }
             })
-            .catch(mongoError => treatError(res, mongoError));
+            .catch(mongoError => treatErrors(res, mongoError));
         } else {
           res.status(200).send({ message: SUCCESS.USER.USER_NOT_CHANGED, user: userToBeUpdated });
         }

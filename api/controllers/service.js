@@ -5,6 +5,7 @@ const omitBy = require('lodash/fp/omitBy');
 const compose = require('lodash/fp/compose');
 
 const Service = require('../models/service');
+const Review = require('../models/review');
 const User = require('../models/user');
 const {
   USER: {
@@ -19,39 +20,81 @@ const { ERROR, SUCCESS, getQueryParams, getId, getBody, mapErrors } = require('.
 const getServiceWithoutProvider = compose(omitBy('providerId'), getBody);
 const providerFields = `${FIRST_NAME} ${LAST_NAME} ${PHONE_NUMBER} ${ADDRESS}`;
 
-const getServices = (req, res) => {
-  const { name, category } = getQueryParams(req);
-  if (name) {
-    User.findOne({
-      $or: [
-        {
-          [FIRST_NAME]: { $regex: name, $options: 'i' },
-        },
-        { [LAST_NAME]: { $regex: name, $options: 'i' } },
-      ],
-    })
-      .then(user => {
-        Service.find({
-          $or: [
-            {
-              [NAME]: { $regex: name, $options: 'i' },
-            },
-            ...(user ? [{ [PROVIDER_ID]: user._id }] : []),
-          ],
-          ...(category && { [CATEGORY]: category }),
-        })
-          .populate(PROVIDER_ID, providerFields)
-          .then(services => res.status(200).send(services))
-          .catch(error => res.status(400).send(error));
+const getServices = (_, res) => {
+  Service.find()
+    .populate(PROVIDER_ID, providerFields)
+    .lean()
+    .then(async services =>
+      res.status(200).send({
+        services: await Promise.all(
+          services.map(async service => ({
+            ...service,
+            reviews: await Review.find({ serviceId: service._id }).exec(),
+          }))
+        ),
       })
-      .catch(error => res.status(400).send(error));
-  } else {
-    Service.find({
+    )
+    .catch(err => res.status(400).send(err));
+};
+
+const searchServices = async (req, res) => {
+  const { name, category } = getQueryParams(req);
+  let users = [];
+  try {
+    if (name) {
+      users = await User.find({
+        $or: [
+          {
+            [FIRST_NAME]: { $regex: name, $options: 'i' },
+          },
+          { [LAST_NAME]: { $regex: name, $options: 'i' } },
+        ],
+      })
+        .lean()
+        .exec();
+
+      users = await Promise.all(
+        users.map(async user => ({
+          ...user,
+          services: await Service.find({
+            providerId: user._id,
+          })
+            .lean()
+            .exec(),
+        }))
+      );
+
+      users = await Promise.all(
+        users.map(async user => ({
+          ...user,
+          services: await Promise.all(
+            user.services.map(async service => ({
+              ...service,
+              reviews: await Review.find({ serviceId: service._id }).exec(),
+            }))
+          ),
+        }))
+      );
+    }
+
+    let services = await Service.find({
+      ...(name && { [NAME]: { $regex: name, $options: 'i' } }),
       ...(category && { [CATEGORY]: category }),
     })
       .populate(PROVIDER_ID, providerFields)
-      .then(services => res.status(200).send(services))
-      .catch(error => res.status(400).send(error));
+      .lean()
+      .exec();
+
+    services = await Promise.all(
+      services.map(async service => ({
+        ...service,
+        reviews: await Review.find({ serviceId: service._id }).exec(),
+      }))
+    );
+
+    res.status(200).send({ users, services });
+  } catch (err) {
+    res.status(400).send(err);
   }
 };
 
@@ -59,10 +102,14 @@ const getServiceById = (req, res) => {
   const id = getId(req);
   if (ObjectId.isValid(id)) {
     Service.findById(id)
+      .lean()
       .populate(PROVIDER_ID, providerFields)
-      .then(service => {
-        if (service) res.status(200).send(service);
-        else res.status(404).send({ error: ERROR.SERVICE.SERVICE_NOT_FOUND });
+      .then(async service => {
+        if (service) {
+          res
+            .status(200)
+            .send({ ...service, reviews: await Review.find({ serviceId: service._id }).exec() });
+        } else res.status(404).send({ error: ERROR.SERVICE.SERVICE_NOT_FOUND });
       })
       .catch(error => res.status(400).send(error));
   } else res.status(400).send({ error: ERROR.SERVICE.SERVICE_ID_NOT_VALID });
@@ -72,7 +119,17 @@ const getServicesByProvider = (req, res) => {
   const providerId = getId(req);
   if (ObjectId.isValid(providerId)) {
     Service.find({ providerId })
-      .then(services => res.status(200).send(services))
+      .lean()
+      .then(async services =>
+        res.status(200).send({
+          services: await Promise.all(
+            services.map(async service => ({
+              ...service,
+              reviews: await Review.find({ serviceId: service._id }).exec(),
+            }))
+          ),
+        })
+      )
       .catch(error => res.status(400).send(error));
   } else res.status(400).send({ error: ERROR.SERVICE.PROVIDER_ID_NOT_VALID });
 };
@@ -127,6 +184,7 @@ const updateService = (req, res) => {
 
 module.exports = {
   getServices,
+  searchServices,
   getServiceById,
   getServicesByProvider,
   createService,

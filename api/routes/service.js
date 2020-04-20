@@ -5,6 +5,8 @@ const router = express.Router();
 
 router.get('/services', serviceController.getServices);
 
+router.get('/services/search', serviceController.searchServices);
+
 router.get('/service/:id', serviceController.getServiceById);
 
 router.get('/provider/:id/services', serviceController.getServicesByProvider);
