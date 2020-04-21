@@ -79,6 +79,10 @@ const SERVICE = {
     DURATION: 'DURATION_TOO_BIG',
     AVERAGE_RATING: 'AVERAGE_RATING_TOO_BIG',
   },
+  VIRTUALS: {
+    PROVIDER: 'provider',
+    REVIEWS: 'reviews',
+  },
 };
 
 const APPOINTMENT = {
@@ -108,6 +112,7 @@ const APPOINTMENT = {
 };
 
 const REVIEW = {
+  MODEL: 'review',
   FIELDS: {
     ID: '_id',
     SERVICE_ID: 'serviceId',
@@ -132,6 +137,11 @@ const REVIEW = {
   },
   MIN_LENGTH: { COMMENT: 'COMMENT_TOO_SHORT' },
   MAX_LENGTH: { COMMENT: 'COMMENT_TOO_LONG' },
+  VIRTUALS: {
+    SERVICE: 'service',
+    PROVIDER: 'provider',
+    CLIENT: 'client',
+  },
 };
 
 const isNameValid = value => /^[a-zA-Z]+$/.test(value);

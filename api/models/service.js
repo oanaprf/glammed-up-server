@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { SERVICE } = require('./constants');
+const { SERVICE, USER, REVIEW } = require('./constants');
 const User = require('./user');
 
 const CATEGORY_ARRAY = Object.values(SERVICE.CATEGORY_ENUM);
@@ -40,9 +40,31 @@ const ServiceSchema = new mongoose.Schema(
     },
     [SERVICE.FIELDS.PICTURES]: [{ type: Buffer }],
   },
-  { versionKey: false }
+  {
+    versionKey: false,
+    toObject: {
+      virtuals: true,
+    },
+    toJSON: {
+      virtuals: true,
+    },
+    id: false,
+  }
 );
 
-const Service = mongoose.model('service', ServiceSchema);
+ServiceSchema.virtual(SERVICE.VIRTUALS.PROVIDER, {
+  ref: USER.MODEL,
+  localField: SERVICE.FIELDS.PROVIDER_ID,
+  foreignField: USER.FIELDS.ID,
+  justOne: true,
+});
+
+ServiceSchema.virtual(SERVICE.VIRTUALS.REVIEWS, {
+  ref: REVIEW.MODEL,
+  localField: SERVICE.FIELDS.ID,
+  foreignField: REVIEW.FIELDS.SERVICE_ID,
+});
+
+const Service = mongoose.model(SERVICE.MODEL, ServiceSchema);
 
 module.exports = Service;

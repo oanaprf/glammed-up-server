@@ -5,32 +5,42 @@ const omit = require('lodash/fp/omit');
 const compose = require('lodash/fp/compose');
 
 const Service = require('../models/service');
-const Review = require('../models/review');
 const User = require('../models/user');
 const {
   USER: {
     FIELDS: { FIRST_NAME, LAST_NAME, PHONE_NUMBER, ADDRESS },
+    VIRTUALS: { SERVICES },
   },
   SERVICE: {
     FIELDS: { NAME, PROVIDER_ID, CATEGORY },
+    VIRTUALS: { PROVIDER, REVIEWS },
+  },
+  REVIEW: {
+    VIRTUALS: { CLIENT },
   },
 } = require('../models/constants');
 const { ERROR, SUCCESS, getQueryParams, getId, getBody, mapErrors } = require('./constants');
 
-const getServiceWithoutProvider = compose(omit('providerId'), getBody);
-const providerFields = `${FIRST_NAME} ${LAST_NAME} ${PHONE_NUMBER} ${ADDRESS}`;
+const emptyUsers = { users: [] };
+const getServiceWithoutProvider = compose(omit(PROVIDER_ID), getBody);
+const populateProvider = {
+  path: PROVIDER,
+  select: `${FIRST_NAME} ${LAST_NAME} ${PHONE_NUMBER} ${ADDRESS}`,
+};
+const populateReview = {
+  path: REVIEWS,
+  populate: { path: CLIENT, select: `${FIRST_NAME} ${LAST_NAME}` },
+};
 
 const getServiceById = (req, res) => {
   const id = getId(req);
   if (ObjectId.isValid(id)) {
     Service.findById(id)
-      .lean()
-      .populate(PROVIDER_ID, providerFields)
-      .then(async service => {
+      .populate(populateProvider)
+      .populate(populateReview)
+      .then(service => {
         if (service) {
-          res
-            .status(200)
-            .send({ ...service, reviews: await Review.find({ serviceId: service._id }).exec() });
+          res.status(200).send(service);
         } else res.status(404).send({ error: ERROR.SERVICE.SERVICE_NOT_FOUND });
       })
       .catch(error => res.status(400).send(error));
@@ -39,97 +49,44 @@ const getServiceById = (req, res) => {
 
 const getServices = (_, res) => {
   Service.find()
-    .populate(PROVIDER_ID, providerFields)
-    .lean()
-    .then(async services =>
-      res.status(200).send({
-        services: await Promise.all(
-          services.map(async service => ({
-            ...service,
-            reviews: await Review.find({ serviceId: service._id }).exec(),
-          }))
-        ),
-      })
-    )
+    .populate(populateProvider)
+    .populate(populateReview)
+    .then(services => res.status(200).send({ services }))
     .catch(err => res.status(400).send(err));
 };
 
-const searchServices = async (req, res) => {
+const searchServices = (req, res) => {
   const { name, category } = getQueryParams(req);
-  let users = [];
-  try {
-    if (name) {
-      users = await User.find({
-        $or: [
-          {
-            [FIRST_NAME]: { $regex: name, $options: 'i' },
-          },
-          { [LAST_NAME]: { $regex: name, $options: 'i' } },
-        ],
+  User.find({
+    ...(name && {
+      $or: [
+        {
+          [FIRST_NAME]: { $regex: name, $options: 'i' },
+        },
+        { [LAST_NAME]: { $regex: name, $options: 'i' } },
+      ],
+    }),
+  })
+    .populate(SERVICES)
+    .then(users =>
+      Service.find({
+        ...(name && { [NAME]: { $regex: name, $options: 'i' } }),
+        ...(category && { [CATEGORY]: category }),
       })
-        .lean()
-        .exec();
-
-      users = await Promise.all(
-        users.map(async user => ({
-          ...user,
-          services: await Service.find({
-            providerId: user._id,
-          })
-            .lean()
-            .exec(),
-        }))
-      );
-
-      users = await Promise.all(
-        users.map(async user => ({
-          ...user,
-          services: await Promise.all(
-            user.services.map(async service => ({
-              ...service,
-              reviews: await Review.find({ serviceId: service._id }).exec(),
-            }))
-          ),
-        }))
-      );
-    }
-
-    let services = await Service.find({
-      ...(name && { [NAME]: { $regex: name, $options: 'i' } }),
-      ...(category && { [CATEGORY]: category }),
-    })
-      .populate(PROVIDER_ID, providerFields)
-      .lean()
-      .exec();
-
-    services = await Promise.all(
-      services.map(async service => ({
-        ...service,
-        reviews: await Review.find({ serviceId: service._id }).exec(),
-      }))
-    );
-
-    res.status(200).send({ users, services });
-  } catch (err) {
-    res.status(400).send(err);
-  }
+        .populate(populateProvider)
+        .populate(populateReview)
+        .then(services => res.status(200).send({ ...(name ? { users } : emptyUsers), services }))
+        .catch(err => res.status(400).send(err))
+    )
+    .catch(err => res.status(200).send(err));
 };
 
 const getServicesByProvider = (req, res) => {
   const providerId = getId(req);
   if (ObjectId.isValid(providerId)) {
     Service.find({ providerId })
-      .lean()
-      .then(async services =>
-        res.status(200).send({
-          services: await Promise.all(
-            services.map(async service => ({
-              ...service,
-              reviews: await Review.find({ serviceId: service._id }).exec(),
-            }))
-          ),
-        })
-      )
+      .populate(populateReview)
+      .then(services => res.status(200).send(services))
       .catch(error => res.status(400).send(error));
   } else res.status(400).send({ error: ERROR.SERVICE.PROVIDER_ID_NOT_VALID });
 };

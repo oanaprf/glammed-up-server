@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { REVIEW } = require('./constants');
+const { REVIEW, SERVICE, USER } = require('./constants');
 const User = require('./user');
 const Service = require('./service');
 
@@ -38,9 +38,39 @@ const ReviewSchema = new mongoose.Schema(
       trim: true,
     },
   },
-  { versionKey: false }
+  {
+    versionKey: false,
+    toObject: {
+      virtuals: true,
+    },
+    toJSON: {
+      virtuals: true,
+    },
+    id: false,
+  }
 );
 
-const Review = mongoose.model('review', ReviewSchema);
+ReviewSchema.virtual(REVIEW.VIRTUALS.SERVICE, {
+  ref: SERVICE.MODEL,
+  localField: REVIEW.FIELDS.SERVICE_ID,
+  foreignField: SERVICE.FIELDS.ID,
+  justOne: true,
+});
+
+ReviewSchema.virtual(REVIEW.VIRTUALS.PROVIDER, {
+  ref: USER.MODEL,
+  localField: REVIEW.FIELDS.PROVIDER_ID,
+  foreignField: USER.FIELDS.ID,
+  justOne: true,
+});
+
+ReviewSchema.virtual(REVIEW.VIRTUALS.CLIENT, {
+  ref: USER.MODEL,
+  localField: REVIEW.FIELDS.CLIENT_ID,
+  foreignField: USER.FIELDS.ID,
+  justOne: true,
+});
+
+const Review = mongoose.model(REVIEW.MODEL, ReviewSchema);
 
 module.exports = Review;

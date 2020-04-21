@@ -19,6 +19,7 @@ const {
 const {
   REVIEW: {
     FIELDS: { SERVICE_ID, PROVIDER_ID, CLIENT_ID },
+    VIRTUALS: { SERVICE, PROVIDER, CLIENT },
   },
   SERVICE: {
     FIELDS: { NAME, PICTURES, CATEGORY, PRICE },
@@ -29,8 +30,8 @@ const {
 } = require('../models/constants');
 
 const populateQuery = [
-  { path: SERVICE_ID, select: `${NAME} ${CATEGORY} ${PRICE} ${PICTURES}` },
-  { path: PROVIDER_ID, select: `${FIRST_NAME} ${LAST_NAME}` },
+  { path: SERVICE, select: `${NAME} ${CATEGORY} ${PRICE} ${PICTURES}` },
+  { path: PROVIDER, select: `${FIRST_NAME} ${LAST_NAME}` },
 ];
 const getReviewWithoutIds = compose(omit([SERVICE_ID, PROVIDER_ID, CLIENT_ID]), getBody);
 
@@ -58,7 +59,7 @@ const getReviewsByClient = (req, res) => {
 const getReviewsByService = (req, res) => {
   const serviceId = getId(req);
   Review.find({ serviceId })
-    .populate('clientId', `${FIRST_NAME} ${LAST_NAME}`)
+    .populate({ path: CLIENT, select: `${FIRST_NAME} ${LAST_NAME}` })
     .then(reviews => res.status(200).send(reviews))
     .catch(error => res.status(400).send(error));
 };
