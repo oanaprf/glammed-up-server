@@ -1,4 +1,5 @@
 const USER = {
+  MODEL: 'user',
   FIELDS: {
     ID: '_id',
     FIRST_NAME: 'firstName',
@@ -32,9 +33,14 @@ const USER = {
     EMAIL: 'EMAIL_TOO_LONG',
     ADDRESS: 'ADDRESS_TOO_LONG',
   },
+  VIRTUALS: {
+    FULL_NAME: 'fullName',
+    SERVICES: 'services',
+  },
 };
 
 const SERVICE = {
+  MODEL: 'service',
   FIELDS: {
     ID: '_id',
     NAME: 'name',

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { USER, isNameValid } = require('./constants');
+const { USER, SERVICE, isNameValid } = require('./constants');
 
 const UserSchema = new mongoose.Schema(
   {
@@ -55,9 +55,29 @@ const UserSchema = new mongoose.Schema(
     [USER.FIELDS.IS_PROVIDER]: { type: Boolean, default: false },
     [USER.FIELDS.PROFILE_PICTURE]: Buffer,
   },
-  { versionKey: false }
+  {
+    versionKey: false,
+    toObject: {
+      virtuals: true,
+    },
+    toJSON: {
+      virtuals: true,
+    },
+    id: false,
+  }
 );
 
-const User = mongoose.model('user', UserSchema);
+// eslint-disable-next-line func-names
+UserSchema.virtual(USER.VIRTUALS.FULL_NAME).get(function () {
+  return `${this[USER.FIELDS.FIRST_NAME]} ${this[USER.FIELDS.LAST_NAME]}`;
+});
+
+UserSchema.virtual(USER.VIRTUALS.SERVICES, {
+  ref: SERVICE.MODEL,
+  localField: USER.FIELDS.ID,
+  foreignField: SERVICE.FIELDS.PROVIDER_ID,
+});
+
+const User = mongoose.model(USER.MODEL, UserSchema);
 
 module.exports = User;
