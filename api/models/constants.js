@@ -86,6 +86,7 @@ const SERVICE = {
 };
 
 const APPOINTMENT = {
+  MODEL: 'appointment',
   FIELDS: {
     ID: '_id',
     SERVICE_ID: 'serviceId',
@@ -109,6 +110,11 @@ const APPOINTMENT = {
     STATUS: 'STATUS_REQUIRED',
   },
   STATUS_NOT_IN_ENUM: 'STATUS_NOT_IN_ENUM',
+  VIRTUALS: {
+    SERVICE: 'service',
+    PROVIDER: 'provider',
+    CLIENT: 'client',
+  },
 };
 
 const REVIEW = {

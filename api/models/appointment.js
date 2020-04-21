@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { APPOINTMENT } = require('./constants');
+const { APPOINTMENT, SERVICE, USER } = require('./constants');
 const User = require('./user');
 const Service = require('./service');
 
@@ -31,10 +31,41 @@ const AppointmentSchema = new mongoose.Schema(
       type: String,
       required: [true, APPOINTMENT.REQUIRED.STATUS],
       enum: { values: STATUS_ARRAY, message: APPOINTMENT.STATUS_NOT_IN_ENUM },
+      default: APPOINTMENT.STATUS_ENUM.PENDING_APPROVAL,
     },
   },
-  { versionKey: false }
+  {
+    versionKey: false,
+    toObject: {
+      virtuals: true,
+    },
+    toJSON: {
+      virtuals: true,
+    },
+    id: false,
+  }
 );
+
+AppointmentSchema.virtual(APPOINTMENT.VIRTUALS.SERVICE, {
+  ref: SERVICE.MODEL,
+  localField: APPOINTMENT.FIELDS.SERVICE_ID,
+  foreignField: SERVICE.FIELDS.ID,
+  justOne: true,
+});
+
+AppointmentSchema.virtual(APPOINTMENT.VIRTUALS.PROVIDER, {
+  ref: USER.MODEL,
+  localField: APPOINTMENT.FIELDS.PROVIDER_ID,
+  foreignField: USER.FIELDS.ID,
+  justOne: true,
+});
+
+AppointmentSchema.virtual(APPOINTMENT.VIRTUALS.CLIENT, {
+  ref: USER.MODEL,
+  localField: APPOINTMENT.FIELDS.CLIENT_ID,
+  foreignField: USER.FIELDS.ID,
+  justOne: true,
+});
 
 const Appointment = mongoose.model('appointment', AppointmentSchema);
 

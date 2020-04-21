@@ -7,4 +7,6 @@ router.get('/appointment/:id', appointmentController.getAppointmentById);
 
 router.get('/client/:id/appointments', appointmentController.getAppointmentsByClient);
 
+router.get('/provider/:id/appointments', appointmentController.getAppointmentsByProvider);
+
 module.exports = router;

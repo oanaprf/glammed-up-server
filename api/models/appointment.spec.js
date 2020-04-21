@@ -68,17 +68,6 @@ describe('test appointment model', () => {
     expect(getErrorMessage(APPOINTMENT.FIELDS.DATE, error)).toBe(APPOINTMENT.REQUIRED.DATE);
   });
 
-  test('status required', () => {
-    const appointment = new Appointment({
-      serviceId: new mongoose.Types.ObjectId(),
-      providerId: new mongoose.Types.ObjectId(),
-      clientId: new mongoose.Types.ObjectId(),
-      date: Date.now(),
-    });
-    const error = appointment.validateSync();
-    expect(getErrorMessage(APPOINTMENT.FIELDS.STATUS, error)).toBe(APPOINTMENT.REQUIRED.STATUS);
-  });
-
   test('status not in enum', () => {
     const appointment = new Appointment({
       serviceId: new mongoose.Types.ObjectId(),

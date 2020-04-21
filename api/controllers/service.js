@@ -36,8 +36,7 @@ const getServiceById = (req, res) => {
   const id = getId(req);
   if (ObjectId.isValid(id)) {
     Service.findById(id)
-      .populate(populateProvider)
-      .populate(populateReview)
+      .populate([populateProvider, populateReview])
       .then(service => {
         if (service) {
           res.status(200).send(service);
@@ -49,8 +48,7 @@ const getServiceById = (req, res) => {
 
 const getServices = (_, res) => {
   Service.find()
-    .populate(populateProvider)
-    .populate(populateReview)
+    .populate([populateProvider, populateReview])
     .then(services => res.status(200).send({ services }))
     .catch(err => res.status(400).send(err));
 };
@@ -73,8 +71,7 @@ const searchServices = (req, res) => {
         ...(name && { [NAME]: { $regex: name, $options: 'i' } }),
         ...(category && { [CATEGORY]: category }),
       })
-        .populate(populateProvider)
-        .populate(populateReview)
+        .populate([populateProvider, populateReview])
         .then(services => res.status(200).send({ ...(name ? { users } : emptyUsers), services }))
         .catch(err => res.status(400).send(err))
     )

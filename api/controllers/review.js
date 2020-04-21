@@ -50,18 +50,22 @@ const getReviewById = (req, res) => {
 
 const getReviewsByClient = (req, res) => {
   const clientId = getId(req);
-  Review.find({ clientId })
-    .populate(populateQuery)
-    .then(reviews => res.status(200).send(reviews))
-    .catch(error => res.status(400).send(error));
+  if (ObjectId.isValid(clientId)) {
+    Review.find({ clientId })
+      .populate(populateQuery)
+      .then(reviews => res.status(200).send(reviews))
+      .catch(error => res.status(400).send(error));
+  } else res.status(400).send({ error: ERROR.REVIEW.CLIENT_ID_NOT_VALID });
 };
 
 const getReviewsByService = (req, res) => {
   const serviceId = getId(req);
-  Review.find({ serviceId })
-    .populate({ path: CLIENT, select: `${FIRST_NAME} ${LAST_NAME}` })
-    .then(reviews => res.status(200).send(reviews))
-    .catch(error => res.status(400).send(error));
+  if (ObjectId.isValid(serviceId)) {
+    Review.find({ serviceId })
+      .populate({ path: CLIENT, select: `${FIRST_NAME} ${LAST_NAME}` })
+      .then(reviews => res.status(200).send(reviews))
+      .catch(error => res.status(400).send(error));
+  } else res.status(400).send({ error: ERROR.SERVICE.SERVICE_ID_NOT_VALID });
 };
 
 const createReview = async (req, res) => {

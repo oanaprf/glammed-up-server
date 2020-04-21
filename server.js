@@ -9,6 +9,7 @@ const getOr = require('lodash/fp/getOr');
 const userRouter = require('./api/routes/user');
 const reviewRouter = require('./api/routes/review');
 const serviceRouter = require('./api/routes/service');
+const appointmentRouter = require('./api/routes/appointment');
 const { ERROR } = require('./api/controllers/constants');
 require('dotenv/config');
 
@@ -46,6 +47,7 @@ app.use(authMiddleware);
 app.use(userRouter);
 app.use(reviewRouter);
 app.use(serviceRouter);
+app.use(appointmentRouter);
 
 mongoose
   .connect(process.env.MONGODB_URI, {
