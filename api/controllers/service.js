@@ -20,6 +20,23 @@ const { ERROR, SUCCESS, getQueryParams, getId, getBody, mapErrors } = require('.
 const getServiceWithoutProvider = compose(omit('providerId'), getBody);
 const providerFields = `${FIRST_NAME} ${LAST_NAME} ${PHONE_NUMBER} ${ADDRESS}`;
 
+const getServiceById = (req, res) => {
+  const id = getId(req);
+  if (ObjectId.isValid(id)) {
+    Service.findById(id)
+      .lean()
+      .populate(PROVIDER_ID, providerFields)
+      .then(async service => {
+        if (service) {
+          res
+            .status(200)
+            .send({ ...service, reviews: await Review.find({ serviceId: service._id }).exec() });
+        } else res.status(404).send({ error: ERROR.SERVICE.SERVICE_NOT_FOUND });
+      })
+      .catch(error => res.status(400).send(error));
+  } else res.status(400).send({ error: ERROR.SERVICE.SERVICE_ID_NOT_VALID });
+};
+
 const getServices = (_, res) => {
   Service.find()
     .populate(PROVIDER_ID, providerFields)
@@ -96,23 +113,6 @@ const searchServices = async (req, res) => {
   } catch (err) {
     res.status(400).send(err);
   }
-};
-
-const getServiceById = (req, res) => {
-  const id = getId(req);
-  if (ObjectId.isValid(id)) {
-    Service.findById(id)
-      .lean()
-      .populate(PROVIDER_ID, providerFields)
-      .then(async service => {
-        if (service) {
-          res
-            .status(200)
-            .send({ ...service, reviews: await Review.find({ serviceId: service._id }).exec() });
-        } else res.status(404).send({ error: ERROR.SERVICE.SERVICE_NOT_FOUND });
-      })
-      .catch(error => res.status(400).send(error));
-  } else res.status(400).send({ error: ERROR.SERVICE.SERVICE_ID_NOT_VALID });
 };
 
 const getServicesByProvider = (req, res) => {
