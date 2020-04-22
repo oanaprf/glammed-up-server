@@ -9,7 +9,6 @@ const {
     FIELDS: { FIRST_NAME, LAST_NAME },
   },
   APPOINTMENT: {
-    FIELDS: { CLIENT_ID, PROVIDER_ID },
     VIRTUALS: { SERVICE, PROVIDER, CLIENT },
   },
   SERVICE: {
@@ -34,20 +33,30 @@ const getAppointmentById = (req, res) => {
   } else res.status(400).send({ error: ERROR.APPOINTMENT.APPOINTMENT_ID_NOT_VALID });
 };
 
-const getAppointmentsByClient = async (req, res) => {
+const getAppointmentsByClient = (req, res) => {
   const clientId = getId(req);
   const { month, year } = getQueryParams(req);
   if (ObjectId.isValid(clientId)) {
-    const appointments = await Appointment.aggregate([
-      { $match: { [CLIENT_ID]: ObjectId(clientId) } },
-      ...(month
-        ? [{ $addFields: { month: { $month: '$date' } } }, { $match: { month: +month } }]
-        : []),
-      ...(year ? [{ $addFields: { year: { $year: '$date' } } }, { $match: { year: +year } }] : []),
-      { $unset: 'month' },
-      { $unset: 'year' },
-    ]).exec();
-    Appointment.populate(appointments, [populateService, populateProvider])
+    Appointment.find({
+      clientId,
+      // eslint-disable-next-line no-nested-ternary
+      ...(year
+        ? month
+          ? {
+              date: {
+                $gte: new Date(Date.UTC(year, +month - 1, 1)),
+                $lt: new Date(Date.UTC(year, month, 1)),
+              },
+            }
+          : {
+              date: {
+                $gte: new Date(Date.UTC(year, 0)),
+                $lt: new Date(Date.UTC(+year + 1, 0)),
+              },
+            }
+        : {}),
+    })
+      .populate([populateService, populateProvider])
       .then(apps => res.status(200).send(apps))
       .catch(error => res.status(400).send(error));
   } else res.status(400).send({ error: ERROR.REVIEW.CLIENT_ID_NOT_VALID });
@@ -55,37 +64,40 @@ const getAppointmentsByClient = async (req, res) => {
 
 const getAppointmentsByProvider = async (req, res) => {
   const providerId = getId(req);
-  const { month, year, date } = getQueryParams(req);
+  const { month, year, date = '' } = getQueryParams(req);
   if (ObjectId.isValid(providerId)) {
-    try {
-      const appointments = await Appointment.aggregate([
-        { $match: { [PROVIDER_ID]: ObjectId(providerId) } },
-        ...(month
-          ? [{ $addFields: { month: { $month: '$date' } } }, { $match: { month: +month } }]
-          : []),
-        ...(year
-          ? [{ $addFields: { year: { $year: '$date' } } }, { $match: { year: +year } }]
-          : []),
-        ...(date
-          ? [
-              {
-                $addFields: {
-                  parsedDate: { $dateToString: { date: '$date', format: '%Y-%m-%d' } },
-                },
+    const dateFromString = new Date(date);
+    const dateAfter = new Date(new Date(date).setDate(dateFromString.getDate() + 1));
+    Appointment.find({
+      providerId,
+      // eslint-disable-next-line no-nested-ternary
+      ...(date
+        ? {
+            date: {
+              $gte: dateFromString,
+              $lte: dateAfter,
+            },
+          }
+        : // eslint-disable-next-line no-nested-ternary
+        year
+        ? month
+          ? {
+              date: {
+                $gte: new Date(Date.UTC(year, +month - 1, 1)),
+                $lt: new Date(Date.UTC(year, month, 1)),
               },
-              { $match: { parsedDate: date } },
-            ]
-          : []),
-        ...(month ? [{ $unset: 'month' }] : []),
-        ...(year ? [{ $unset: 'year' }] : []),
-        ...(date ? [{ $unset: 'parsedDate' }] : []),
-      ]).exec();
-      Appointment.populate(appointments, [populateService, populateClient])
-        .then(apps => res.status(200).send(apps))
-        .catch(error => res.status(400).send(error));
-    } catch (err) {
-      res.status(400).send(err);
-    }
+            }
+          : {
+              date: {
+                $gte: new Date(Date.UTC(year, 0)),
+                $lt: new Date(Date.UTC(+year + 1, 0)),
+              },
+            }
+        : {}),
+    })
+      .populate([populateService, populateClient])
+      .then(apps => res.status(200).send(apps))
+      .catch(error => res.status(400).send(error));
   } else res.status(400).send({ error: ERROR.SERVICE.PROVIDER_ID_NOT_VALID });
 };
 
