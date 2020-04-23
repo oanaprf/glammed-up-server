@@ -1,8 +1,6 @@
 const {
   Types: { ObjectId },
 } = require('mongoose');
-const compose = require('lodash/fp/compose');
-const omit = require('lodash/fp/omit');
 
 const Review = require('../models/review');
 const User = require('../models/user');
@@ -15,6 +13,7 @@ const {
   getBody,
   findInvalidIdErrorMessage,
   findNotFoundErrorMessage,
+  getPayloadWithoutIds,
 } = require('./constants');
 const {
   REVIEW: {
@@ -33,7 +32,6 @@ const populateQuery = [
   { path: SERVICE, select: `${NAME} ${CATEGORY} ${PRICE} ${PICTURES}` },
   { path: PROVIDER, select: `${FIRST_NAME} ${LAST_NAME}` },
 ];
-const getReviewWithoutIds = compose(omit([SERVICE_ID, PROVIDER_ID, CLIENT_ID]), getBody);
 
 const getReviewById = (req, res) => {
   const id = getId(req);
@@ -118,7 +116,7 @@ const createReview = async (req, res) => {
 const updateReview = (req, res) => {
   const id = getId(req);
   if (ObjectId.isValid(id)) {
-    const review = getReviewWithoutIds(req);
+    const review = getPayloadWithoutIds(req);
     Review.findByIdAndUpdate(id, review, { runValidators: true, new: true })
       .then(updatedReview => {
         if (updatedReview) {

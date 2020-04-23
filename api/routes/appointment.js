@@ -9,4 +9,8 @@ router.get('/client/:id/appointments', appointmentController.getAppointmentsByCl
 
 router.get('/provider/:id/appointments', appointmentController.getAppointmentsByProvider);
 
+router.post('/appointment', appointmentController.createAppointment);
+
+router.put('/appointment/:id', appointmentController.updateAppointment);
+
 module.exports = router;

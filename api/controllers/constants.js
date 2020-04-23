@@ -8,6 +8,7 @@ const reduce = require('lodash/fp/reduce');
 const isEqual = require('lodash/fp/isEqual');
 const negate = require('lodash/fp/negate');
 const identity = require('lodash/fp/identity');
+const omit = require('lodash/fp/omit');
 
 const {
   REVIEW: {
@@ -29,6 +30,10 @@ const SUCCESS = {
     REVIEW_SUCCESSFULLY_CREATED: 'REVIEW_SUCCESSFULLY_CREATED',
     REVIEW_SUCCESSFULLY_UPDATED: 'REVIEW_SUCCESSFULLY_UPDATED',
     REVIEW_SUCCESSFULLY_DELETED: 'REVIEW_SUCCESSFULLY_DELETED',
+  },
+  APPOINTMENT: {
+    APPOINTMENT_SUCCESSFULLY_UPDATED: 'APPOINTMENT_SUCCESSFULLY_UPDATED',
+    APPOINTMENT_SUCCESSFULLY_CREATED: 'APPOINTMENT_SUCCESSFULLY_CREATED',
   },
 };
 
@@ -58,6 +63,7 @@ const ERROR = {
   APPOINTMENT: {
     APPOINTMENT_ID_NOT_VALID: 'APPOINTMENT_ID_NOT_VALID',
     APPOINTMENT_NOT_FOUND: 'APPOINTMENT_NOT_FOUND',
+    APPOINTMENT_WITH_THIS_DATETIME_ALREADY_EXISTS: 'APPOINTMENT_WITH_THIS_DATETIME_ALREADY_EXISTS',
   },
 };
 
@@ -110,6 +116,7 @@ const findErrorMessage = errorMessages =>
   );
 const findInvalidIdErrorMessage = findErrorMessage(invalidIdErrorMessages);
 const findNotFoundErrorMessage = findErrorMessage(notFoundErrorMessages);
+const getPayloadWithoutIds = compose(omit([SERVICE_ID, PROVIDER_ID, CLIENT_ID]), getBody);
 
 module.exports = {
   SUCCESS,
@@ -124,4 +131,5 @@ module.exports = {
   getLength,
   findInvalidIdErrorMessage,
   findNotFoundErrorMessage,
+  getPayloadWithoutIds,
 };
