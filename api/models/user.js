@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { USER, SERVICE, isNameValid } = require('./constants');
+const { USER, SERVICE, isNameValid, isTimeValid } = require('./constants');
 
 const UserSchema = new mongoose.Schema(
   {
@@ -54,6 +54,24 @@ const UserSchema = new mongoose.Schema(
     },
     [USER.FIELDS.IS_PROVIDER]: { type: Boolean, default: false },
     [USER.FIELDS.PROFILE_PICTURE]: Buffer,
+    [USER.FIELDS.START_TIME]: {
+      type: String,
+      default: '10:00',
+      trim: true,
+      validate: {
+        validator: isTimeValid,
+        message: USER.NOT_VALID.START_TIME,
+      },
+    },
+    [USER.FIELDS.END_TIME]: {
+      type: String,
+      default: '18:00',
+      trim: true,
+      validate: {
+        validator: isTimeValid,
+        message: USER.NOT_VALID.END_TIME,
+      },
+    },
   },
   {
     versionKey: false,

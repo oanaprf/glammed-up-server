@@ -7,6 +7,8 @@ const FIELDS_TO_VALIDATE = {
   LAST_NAME: USER.FIELDS.LAST_NAME,
   EMAIL: USER.FIELDS.EMAIL,
   PHONE_NUMBER: USER.FIELDS.PHONE_NUMBER,
+  START_TIME: USER.FIELDS.START_TIME,
+  END_TIME: USER.FIELDS.END_TIME,
 };
 
 const getErrorMessage = (field, error) => getOr(undefined, ['errors', field, 'message'], error);
@@ -18,6 +20,8 @@ describe('test user model', () => {
       lastName: 'Doe',
       email: 'john.doe@yahoo.com',
       phoneNumber: '0712345678',
+      startTime: '20:00',
+      endTime: '20:00',
     });
     const error = user.validateSync();
     expect(error).toBe(undefined);
@@ -29,6 +33,8 @@ describe('test user model', () => {
       lastName: 'Doe2',
       email: 'john.doeyahoo.com',
       phoneNumber: '07123',
+      startTime: '0:00',
+      endTime: '0:00',
     });
     const error = user.validateSync();
     Object.entries(FIELDS_TO_VALIDATE).forEach(([key, value]) =>
@@ -108,5 +114,29 @@ describe('test user model', () => {
     });
     const error = user.validateSync();
     expect(getErrorMessage(USER.FIELDS.PHONE_NUMBER, error)).toBe(USER.NOT_VALID.PHONE_NUMBER);
+  });
+
+  test('startTime not valid', () => {
+    const user = new User({
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe@yahoo.com',
+      phoneNumber: '0712678345',
+      startTime: '0:00',
+    });
+    const error = user.validateSync();
+    expect(getErrorMessage(USER.FIELDS.START_TIME, error)).toBe(USER.NOT_VALID.START_TIME);
+  });
+
+  test('endTime not valid', () => {
+    const user = new User({
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe@yahoo.com',
+      phoneNumber: '0712678345',
+      endTime: '0:00',
+    });
+    const error = user.validateSync();
+    expect(getErrorMessage(USER.FIELDS.END_TIME, error)).toBe(USER.NOT_VALID.END_TIME);
   });
 });

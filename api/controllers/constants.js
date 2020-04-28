@@ -9,6 +9,10 @@ const isEqual = require('lodash/fp/isEqual');
 const negate = require('lodash/fp/negate');
 const identity = require('lodash/fp/identity');
 const omit = require('lodash/fp/omit');
+const map = require('lodash/fp/map');
+const min = require('lodash/fp/min');
+const max = require('lodash/fp/max');
+const difference = require('lodash/fp/difference');
 
 const {
   REVIEW: {
@@ -64,6 +68,7 @@ const ERROR = {
     APPOINTMENT_ID_NOT_VALID: 'APPOINTMENT_ID_NOT_VALID',
     APPOINTMENT_NOT_FOUND: 'APPOINTMENT_NOT_FOUND',
     APPOINTMENT_WITH_THIS_DATETIME_ALREADY_EXISTS: 'APPOINTMENT_WITH_THIS_DATETIME_ALREADY_EXISTS',
+    DATE_AND_DURATION_REQUIRED: 'DATE_AND_DURATION_REQUIRED',
   },
 };
 
@@ -118,6 +123,55 @@ const findInvalidIdErrorMessage = findErrorMessage(invalidIdErrorMessages);
 const findNotFoundErrorMessage = findErrorMessage(notFoundErrorMessages);
 const getPayloadWithoutIds = compose(omit([SERVICE_ID, PROVIDER_ID, CLIENT_ID]), getBody);
 
+const mapDate = map('date');
+const getMinutesBetweenDates = (startDate, endDate) => (endDate - startDate) / 60000;
+const getTimeInMinutes = date => date.getUTCHours() * 60 + date.getUTCMinutes();
+const getTimeFromMinutes = date => minutes => {
+  const newDate = new Date(date);
+  newDate.setUTCHours(Math.floor(minutes / 60));
+  newDate.setUTCMinutes(minutes % 60);
+  return newDate;
+};
+const getProviderTime = (date, time) => {
+  const newDate = new Date(date);
+  newDate.setUTCHours(time.split(':')[0]);
+  newDate.setUTCMinutes(time.split(':')[1]);
+  return newDate;
+};
+
+const getFreeSpots = (dates, duration, startTime, endTime) => {
+  const appointments = map(({ date: serviceDate, service: { duration: serviceDuration } }) => ({
+    date: getTimeInMinutes(serviceDate),
+    duration: serviceDuration,
+  }))(dates);
+
+  let freeSpots = [];
+  const intervalCount = getMinutesBetweenDates(startTime, endTime) / 15;
+  const startTimeMinutes = getTimeInMinutes(startTime);
+  for (let i = 0; i < intervalCount; i++) {
+    freeSpots = [...freeSpots, startTimeMinutes + i * 15];
+  }
+
+  const appointmentsMin = compose(min, mapDate)(appointments);
+  const appointmentsMax = compose(max, mapDate)(appointments);
+  let overlap = [];
+  for (let i = 0; i < getLength(freeSpots); i++) {
+    if (freeSpots[i] + duration >= appointmentsMin && freeSpots[i] + duration <= appointmentsMax) {
+      for (let j = 0; j < getLength(appointments); j++) {
+        if (
+          !(
+            freeSpots[i] + duration <= appointments[j].date ||
+            freeSpots[i] >= appointments[j].date + appointments[j].duration
+          )
+        ) {
+          overlap = [...overlap, freeSpots[i]];
+        }
+      }
+    }
+  }
+  return map(getTimeFromMinutes(startTime))(difference(freeSpots, overlap));
+};
+
 module.exports = {
   SUCCESS,
   ERROR,
@@ -132,4 +186,6 @@ module.exports = {
   findInvalidIdErrorMessage,
   findNotFoundErrorMessage,
   getPayloadWithoutIds,
+  getProviderTime,
+  getFreeSpots,
 };

@@ -23,7 +23,8 @@
       "no-underscore-dangle": "off",
       "operator-linebreak": "off",
       "no-confusing-arrow": "off",
-      "indent": "off"
+      "indent": "off",
+      "no-plusplus": "off"
     },
     "env": {
       "jest": true

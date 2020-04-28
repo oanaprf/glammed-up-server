@@ -12,6 +12,7 @@ describe('test service model', () => {
       providerId: new mongoose.Types.ObjectId(),
       category: 'NAILS',
       price: 25.5,
+      duration: 50,
     });
     const error = service.validateSync();
     expect(error).toBe(undefined);
@@ -55,6 +56,17 @@ describe('test service model', () => {
     });
     const error = service.validateSync();
     expect(getErrorMessage(SERVICE.FIELDS.PRICE, error)).toBe(SERVICE.REQUIRED.PRICE);
+  });
+
+  test('duration required', () => {
+    const service = new Service({
+      name: 'Nails by Oana',
+      providerId: new mongoose.Types.ObjectId(),
+      category: 'NAILS',
+      price: 50,
+    });
+    const error = service.validateSync();
+    expect(getErrorMessage(SERVICE.FIELDS.DURATION, error)).toBe(SERVICE.REQUIRED.DURATION);
   });
 
   test('category not in enum', () => {

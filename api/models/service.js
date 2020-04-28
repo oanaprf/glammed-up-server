@@ -30,6 +30,7 @@ const ServiceSchema = new mongoose.Schema(
     },
     [SERVICE.FIELDS.DURATION]: {
       type: Number,
+      required: [true, SERVICE.REQUIRED.DURATION],
       min: [0, SERVICE.MIN.DURATION],
       max: [360, SERVICE.MAX.DURATION],
     },

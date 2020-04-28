@@ -13,4 +13,6 @@ router.post('/appointment', appointmentController.createAppointment);
 
 router.put('/appointment/:id', appointmentController.updateAppointment);
 
+router.get('/provider/:id/free-spots', appointmentController.getProviderFreeSpots);
+
 module.exports = router;

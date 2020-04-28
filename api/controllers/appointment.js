@@ -15,17 +15,19 @@ const {
   getQueryParams,
   getBody,
   getPayloadWithoutIds,
+  getProviderTime,
+  getFreeSpots,
 } = require('./constants');
 const {
   USER: {
-    FIELDS: { FIRST_NAME, LAST_NAME },
+    FIELDS: { FIRST_NAME, LAST_NAME, START_TIME, END_TIME },
   },
   APPOINTMENT: {
-    FIELDS: { SERVICE_ID, PROVIDER_ID, CLIENT_ID },
+    FIELDS: { ID, SERVICE_ID, PROVIDER_ID, CLIENT_ID, DATE },
     VIRTUALS: { SERVICE, PROVIDER, CLIENT },
   },
   SERVICE: {
-    FIELDS: { NAME, PICTURES, CATEGORY, PRICE },
+    FIELDS: { NAME, PICTURES, CATEGORY, PRICE, DURATION },
   },
 } = require('../models/constants');
 
@@ -88,7 +90,7 @@ const getAppointmentsByProvider = async (req, res) => {
         ? {
             date: {
               $gte: dateFromString,
-              $lte: dateAfter,
+              $lt: dateAfter,
             },
           }
         : // eslint-disable-next-line no-nested-ternary
@@ -178,10 +180,58 @@ const updateAppointment = (req, res) => {
   } else res.status(400).send({ error: ERROR.APPOINTMENT.APPOINTMENT_ID_NOT_VALID });
 };
 
+const getProviderFreeSpots = async (req, res) => {
+  const id = getId(req);
+  const { date } = getQueryParams(req);
+  let { duration } = getQueryParams(req);
+  if (ObjectId.isValid(id)) {
+    if (date && duration) {
+      duration = +duration;
+
+      const { startTime: start, endTime: end } = await User.findById(
+        id,
+        `${START_TIME} ${END_TIME}`
+      ).exec();
+
+      const startTime = getProviderTime(date, start);
+      const endTime = getProviderTime(date, end);
+
+      let appointments = await Appointment.aggregate([
+        { $match: { providerId: ObjectId(id) } },
+        {
+          $match: {
+            date: {
+              $gte: startTime,
+              $lte: endTime,
+            },
+          },
+        },
+        {
+          $project: {
+            [ID]: 0,
+            [SERVICE_ID]: 1,
+            [PROVIDER_ID]: 1,
+            [DATE]: 1,
+          },
+        },
+        { $sort: { date: 1 } },
+      ]).exec();
+      appointments = await Appointment.populate(appointments, {
+        path: SERVICE,
+        select: `${DURATION}`,
+      });
+
+      appointments = getFreeSpots(appointments, duration, startTime, endTime);
+      res.status(200).send(appointments);
+    } else res.status(400).send({ error: ERROR.APPOINTMENT.DATE_AND_DURATION_REQUIRED });
+  } else res.status(400).send({ error: ERROR.SERVICE.PROVIDER_ID_NOT_VALID });
+};
+
 module.exports = {
   getAppointmentById,
   getAppointmentsByClient,
   getAppointmentsByProvider,
   createAppointment,
   updateAppointment,
+  getProviderFreeSpots,
 };

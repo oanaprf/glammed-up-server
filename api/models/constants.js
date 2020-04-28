@@ -9,6 +9,8 @@ const USER = {
     ADDRESS: 'address',
     IS_PROVIDER: 'isProvider',
     PROFILE_PICTURE: 'profilePicture',
+    START_TIME: 'startTime',
+    END_TIME: 'endTime',
   },
   REQUIRED: {
     FIRST_NAME: 'FIRST_NAME_REQUIRED',
@@ -20,6 +22,8 @@ const USER = {
     LAST_NAME: 'LAST_NAME_NOT_VALID',
     EMAIL: 'EMAIL_NOT_VALID',
     PHONE_NUMBER: 'PHONE_NUMBER_NOT_VALID',
+    START_TIME: 'START_TIME_NOT_VALID',
+    END_TIME: 'END_TIME_NOT_VALID',
   },
   MIN_LENGTH: {
     FIRST_NAME: 'FIRST_NAME_TOO_SHORT',
@@ -67,6 +71,7 @@ const SERVICE = {
     PROVIDER_ID: 'PROVIDER_REQUIRED',
     CATEGORY: 'CATEGORY_REQUIRED',
     PRICE: 'PRICE_REQUIRED',
+    DURATION: 'DURATION_REQUIRED',
   },
   CATEGORY_NOT_IN_ENUM: 'CATEGORY_NOT_IN_ENUM',
   MIN: {
@@ -151,6 +156,7 @@ const REVIEW = {
 };
 
 const isNameValid = value => /^[a-zA-Z]+$/.test(value);
+const isTimeValid = value => /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test(value);
 
 module.exports = {
   USER,
@@ -158,4 +164,5 @@ module.exports = {
   APPOINTMENT,
   REVIEW,
   isNameValid,
+  isTimeValid,
 };
