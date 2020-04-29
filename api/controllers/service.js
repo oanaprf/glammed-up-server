@@ -49,7 +49,7 @@ const getServiceById = (req, res) => {
 const getServices = (_, res) => {
   Service.find()
     .populate([populateProvider, populateReview])
-    .then(services => res.status(200).send({ services }))
+    .then(services => res.status(200).send(services))
     .catch(err => res.status(400).send(err));
 };
 

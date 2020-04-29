@@ -25,6 +25,7 @@ admin.initializeApp({
   databaseURL: process.env.FIREBASEDB_URI,
 });
 
+// eslint-disable-next-line no-unused-vars
 const authMiddleware = (req, res, next) => {
   const authToken = getOr(undefined, ['headers', 'authorization'], req);
   if (authToken) {
@@ -43,7 +44,7 @@ const authMiddleware = (req, res, next) => {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
-app.use(authMiddleware);
+// app.use(authMiddleware);
 app.use(userRouter);
 app.use(reviewRouter);
 app.use(serviceRouter);
