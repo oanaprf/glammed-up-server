@@ -10,6 +10,7 @@ const userRouter = require('./api/routes/user');
 const reviewRouter = require('./api/routes/review');
 const serviceRouter = require('./api/routes/service');
 const appointmentRouter = require('./api/routes/appointment');
+const userController = require('./api/controllers/user');
 const { ERROR } = require('./api/controllers/constants');
 require('dotenv/config');
 
@@ -25,14 +26,17 @@ admin.initializeApp({
   databaseURL: process.env.FIREBASEDB_URI,
 });
 
-// eslint-disable-next-line no-unused-vars
 const authMiddleware = (req, res, next) => {
   const authToken = getOr(undefined, ['headers', 'authorization'], req);
   if (authToken) {
     admin
       .auth()
       .verifyIdToken(authToken)
-      .then(() => next())
+      .then(decodedToken => {
+        if (req.method === 'GET' && req.url === '/login') {
+          userController.getUserById({ params: { id: decodedToken.uid } }, res);
+        } else next();
+      })
       .catch(() => res.status(401).send({ error: ERROR.APP.UNAUTHORIZED }));
   } else if (req.method === 'POST' && req.url === '/user') {
     next();
@@ -44,7 +48,7 @@ const authMiddleware = (req, res, next) => {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
-// app.use(authMiddleware);
+app.use(authMiddleware);
 app.use(userRouter);
 app.use(reviewRouter);
 app.use(serviceRouter);
