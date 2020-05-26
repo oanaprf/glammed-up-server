@@ -102,7 +102,7 @@ const createReview = async (req, res) => {
           .then(mongoReview =>
             res.status(201).send({
               message: SUCCESS.REVIEW.REVIEW_SUCCESSFULLY_CREATED,
-              review: mongoReview,
+              data: mongoReview,
             })
           )
           .catch(error => res.status(400).send(mapErrors(error)));
@@ -122,7 +122,7 @@ const updateReview = (req, res) => {
         if (updatedReview) {
           res.status(200).send({
             message: SUCCESS.REVIEW.REVIEW_SUCCESSFULLY_UPDATED,
-            service: updatedReview,
+            data: updatedReview,
           });
         } else res.status(400).send({ error: ERROR.REVIEW.REVIEW_NOT_FOUND });
       })

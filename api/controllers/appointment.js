@@ -152,7 +152,7 @@ const createAppointment = async (req, res) => {
           .then(mongoAppointment =>
             res.status(201).send({
               message: SUCCESS.APPOINTMENT.APPOINTMENT_SUCCESSFULLY_CREATED,
-              appointment: mongoAppointment,
+              data: mongoAppointment,
             })
           )
           .catch(error => res.status(400).send(mapErrors(error)));
@@ -172,7 +172,7 @@ const updateAppointment = (req, res) => {
         if (updatedAppointment) {
           res.status(200).send({
             message: SUCCESS.APPOINTMENT.APPOINTMENT_SUCCESSFULLY_UPDATED,
-            service: updatedAppointment,
+            data: updatedAppointment,
           });
         } else res.status(400).send({ error: ERROR.APPOINTMENT.APPOINTMENT_NOT_FOUND });
       })

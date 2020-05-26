@@ -47,7 +47,7 @@ const createUser = (req, res) => {
           password: bcrypt.hashSync(password, 12),
         })
         .then(() =>
-          res.status(201).send({ message: SUCCESS.USER.USER_SUCCESSFULLY_CREATED, user: mongoUser })
+          res.status(201).send({ message: SUCCESS.USER.USER_SUCCESSFULLY_CREATED, data: mongoUser })
         )
         .catch(firebaseError => res.status(400).send(firebaseError))
     )
@@ -74,7 +74,7 @@ const updateUser = (req, res) => {
                     if (user) {
                       res.status(200).send({
                         message: SUCCESS.USER.USER_SUCCESSFULLY_UPDATED,
-                        user: userToBeUpdated,
+                        data: userToBeUpdated,
                       });
                     }
                   })
@@ -82,12 +82,12 @@ const updateUser = (req, res) => {
               } else {
                 res
                   .status(200)
-                  .send({ message: SUCCESS.USER.USER_SUCCESSFULLY_UPDATED, userToBeUpdated });
+                  .send({ message: SUCCESS.USER.USER_SUCCESSFULLY_UPDATED, data: userToBeUpdated });
               }
             })
             .catch(mongoError => treatErrors(res, mongoError));
         } else {
-          res.status(200).send({ message: SUCCESS.USER.USER_NOT_CHANGED, user: userToBeUpdated });
+          res.status(200).send({ message: SUCCESS.USER.USER_NOT_CHANGED, data: userToBeUpdated });
         }
       })
       .catch(() => res.status(404).send({ error: ERROR.USER.USER_NOT_FOUND }));

@@ -109,7 +109,7 @@ const createService = (req, res) => {
             .then(mongoService =>
               res.status(201).send({
                 message: SUCCESS.SERVICE.SERVICE_SUCCESSFULLY_CREATED,
-                service: mongoService,
+                data: mongoService,
               })
             )
             .catch(error => res.status(400).send(mapErrors(error)));
@@ -128,7 +128,7 @@ const updateService = (req, res) => {
         if (updatedService) {
           res.status(200).send({
             message: SUCCESS.SERVICE.SERVICE_SUCCESSFULLY_UPDATED,
-            service: updatedService,
+            data: updatedService,
           });
         } else res.status(400).send({ error: ERROR.SERVICE.SERVICE_NOT_FOUND });
       })
