@@ -46,8 +46,13 @@ const getServiceById = (req, res) => {
   } else res.status(400).send({ error: ERROR.SERVICE.SERVICE_ID_NOT_VALID });
 };
 
-const getServices = (_, res) => {
-  Service.find()
+const getServices = (req, res) => {
+  const { mostPopular } = getQueryParams(req);
+  Service.find({
+    ...(mostPopular
+      ? { rating: 5 }
+      : { $or: [{ rating: { $lt: 5 } }, { rating: { $exists: 0 } }] }),
+  })
     .populate([populateProvider, populateReview])
     .then(services => res.status(200).send(services))
     .catch(err => res.status(400).send(err));
