@@ -68,6 +68,7 @@ const searchServices = (req, res) => {
         },
         { [LAST_NAME]: { $regex: name, $options: 'i' } },
       ],
+      isProvider: true,
     }),
   })
     .populate(SERVICES)
