@@ -25,11 +25,11 @@ const emptyUsers = { users: [] };
 const getServiceWithoutProvider = compose(omit(PROVIDER_ID), getBody);
 const populateProvider = {
   path: PROVIDER,
-  select: `${FULL_NAME} ${PHONE_NUMBER} ${ADDRESS}`,
+  select: `${FIRST_NAME} ${LAST_NAME} ${FULL_NAME} ${PHONE_NUMBER} ${ADDRESS}`,
 };
 const populateReview = {
   path: REVIEWS,
-  populate: { path: CLIENT, select: `${FULL_NAME}` },
+  populate: { path: CLIENT, select: `${FIRST_NAME} ${LAST_NAME} ${FULL_NAME}` },
 };
 
 const getServiceById = (req, res) => {
