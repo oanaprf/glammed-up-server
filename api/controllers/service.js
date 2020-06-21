@@ -50,7 +50,7 @@ const getServices = (req, res) => {
   const { mostPopular } = getQueryParams(req);
   Service.find({
     ...(mostPopular
-      ? { rating: 5 }
+      ? { averageRating: 5 }
       : { $or: [{ rating: { $lt: 5 } }, { rating: { $exists: 0 } }] }),
   })
     .populate([populateProvider, populateReview])
