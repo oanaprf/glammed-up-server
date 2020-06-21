@@ -8,7 +8,7 @@ const Service = require('../models/service');
 const User = require('../models/user');
 const {
   USER: {
-    FIELDS: { FIRST_NAME, LAST_NAME, PHONE_NUMBER, ADDRESS },
+    FIELDS: { FIRST_NAME, LAST_NAME, FULL_NAME, PHONE_NUMBER, ADDRESS },
     VIRTUALS: { SERVICES },
   },
   SERVICE: {
@@ -25,11 +25,11 @@ const emptyUsers = { users: [] };
 const getServiceWithoutProvider = compose(omit(PROVIDER_ID), getBody);
 const populateProvider = {
   path: PROVIDER,
-  select: `${FIRST_NAME} ${LAST_NAME} ${PHONE_NUMBER} ${ADDRESS}`,
+  select: `${FULL_NAME} ${PHONE_NUMBER} ${ADDRESS}`,
 };
 const populateReview = {
   path: REVIEWS,
-  populate: { path: CLIENT, select: `${FIRST_NAME} ${LAST_NAME}` },
+  populate: { path: CLIENT, select: `${FULL_NAME}` },
 };
 
 const getServiceById = (req, res) => {

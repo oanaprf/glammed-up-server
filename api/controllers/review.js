@@ -24,13 +24,13 @@ const {
     FIELDS: { NAME, PICTURES, CATEGORY, PRICE },
   },
   USER: {
-    FIELDS: { FIRST_NAME, LAST_NAME },
+    FIELDS: { FULL_NAME },
   },
 } = require('../models/constants');
 
 const populateQuery = [
   { path: SERVICE, select: `${NAME} ${CATEGORY} ${PRICE} ${PICTURES}` },
-  { path: PROVIDER, select: `${FIRST_NAME} ${LAST_NAME}` },
+  { path: PROVIDER, select: `${FULL_NAME}` },
 ];
 
 const getReviewById = (req, res) => {
@@ -60,7 +60,7 @@ const getReviewsByService = (req, res) => {
   const serviceId = getId(req);
   if (ObjectId.isValid(serviceId)) {
     Review.find({ serviceId })
-      .populate({ path: CLIENT, select: `${FIRST_NAME} ${LAST_NAME}` })
+      .populate({ path: CLIENT, select: `${FULL_NAME}` })
       .then(reviews => res.status(200).send(reviews))
       .catch(error => res.status(400).send(error));
   } else res.status(400).send({ error: ERROR.SERVICE.SERVICE_ID_NOT_VALID });
