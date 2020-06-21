@@ -20,7 +20,7 @@ const {
 } = require('./constants');
 const {
   USER: {
-    FIELDS: { FIRST_NAME, LAST_NAME, FULL_NAME, START_TIME, END_TIME },
+    FIELDS: { FIRST_NAME, LAST_NAME, FULL_NAME, START_TIME, END_TIME, PHONE_NUMBER, ADDRESS },
   },
   APPOINTMENT: {
     FIELDS: { ID, SERVICE_ID, PROVIDER_ID, CLIENT_ID, DATE },
@@ -32,7 +32,10 @@ const {
 } = require('../models/constants');
 
 const populateService = { path: SERVICE, select: `${NAME} ${CATEGORY} ${PRICE} ${PICTURES}` };
-const populateProvider = { path: PROVIDER, select: `${FIRST_NAME} ${LAST_NAME} ${FULL_NAME}` };
+const populateProvider = {
+  path: PROVIDER,
+  select: `${FIRST_NAME} ${LAST_NAME} ${FULL_NAME} ${PHONE_NUMBER} ${ADDRESS}`,
+};
 const populateClient = { path: CLIENT, select: `${FIRST_NAME} ${LAST_NAME} ${FULL_NAME}` };
 
 const getAppointmentById = (req, res) => {
