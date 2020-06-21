@@ -1,3 +1,5 @@
+const meanBy = require('lodash/fp/meanBy');
+
 const {
   Types: { ObjectId },
 } = require('mongoose');
@@ -100,9 +102,20 @@ const createReview = async (req, res) => {
         review
           .save()
           .then(mongoReview =>
-            res.status(201).send({
-              message: SUCCESS.REVIEW.REVIEW_SUCCESSFULLY_CREATED,
-              data: mongoReview,
+            Review.find({ serviceId }).then(reviews => {
+              const averageRating = meanBy(({ rating: r }) => r, reviews).toFixed(1);
+              Service.findByIdAndUpdate(
+                serviceId,
+                { $set: { averageRating } },
+                { runValidators: true, new: true }
+              )
+                .then(() =>
+                  res.status(201).send({
+                    message: SUCCESS.REVIEW.REVIEW_SUCCESSFULLY_CREATED,
+                    data: mongoReview,
+                  })
+                )
+                .catch(error => res.status(400).send(mapErrors(error)));
             })
           )
           .catch(error => res.status(400).send(mapErrors(error)));
