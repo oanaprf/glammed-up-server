@@ -33,10 +33,10 @@ const getUserById = (req, res) => {
   } else res.status(400).send({ error: ERROR.USER.USER_ID_NOT_VALID });
 };
 
-const getClientNames = (req, res) => {
+const getClientNames = (_, res) => {
   User.find({ isProvider: false }, { firstName: 1, lastName: 1 })
     .then(clients => {
-      if (clients) res.status(200).send(clients.map(({ fullName }) => fullName));
+      if (clients) res.status(200).send(clients);
       else res.status(404).send({ error: ERROR.USER.USER_NOT_FOUND });
     })
     .catch(error => res.status(400).send(error));

@@ -98,7 +98,7 @@ const getServiceNamesByProvider = (req, res) => {
   const providerId = getId(req);
   if (ObjectId.isValid(providerId)) {
     Service.find({ providerId }, { name: 1 })
-      .then(services => res.status(200).send(services.map(({ name }) => name)))
+      .then(services => res.status(200).send(services))
       .catch(error => res.status(400).send(error));
   } else res.status(400).send({ error: ERROR.SERVICE.PROVIDER_ID_NOT_VALID });
 };
