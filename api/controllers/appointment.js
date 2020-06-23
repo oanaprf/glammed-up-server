@@ -27,11 +27,14 @@ const {
     VIRTUALS: { SERVICE, PROVIDER, CLIENT },
   },
   SERVICE: {
-    FIELDS: { NAME, PICTURES, CATEGORY, PRICE, DURATION },
+    FIELDS: { NAME, PICTURES, CATEGORY, PRICE, DURATION, AVERAGE_RATING },
   },
 } = require('../models/constants');
 
-const populateService = { path: SERVICE, select: `${NAME} ${CATEGORY} ${PRICE} ${PICTURES}` };
+const populateService = {
+  path: SERVICE,
+  select: `${NAME} ${CATEGORY} ${PRICE} ${PICTURES} ${AVERAGE_RATING}`,
+};
 const populateProvider = {
   path: PROVIDER,
   select: `${FIRST_NAME} ${LAST_NAME} ${FULL_NAME} ${PHONE_NUMBER} ${ADDRESS}`,
