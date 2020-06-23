@@ -11,6 +11,8 @@ router.get('/services/search', serviceController.searchServices);
 
 router.get('/provider/:id/services', serviceController.getServicesByProvider);
 
+router.get('/provider/:id/serviceNames', serviceController.getServiceNamesByProvider);
+
 router.post('/service', serviceController.createService);
 
 router.put('/service/:id', serviceController.updateService);

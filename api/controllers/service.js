@@ -94,6 +94,15 @@ const getServicesByProvider = (req, res) => {
   } else res.status(400).send({ error: ERROR.SERVICE.PROVIDER_ID_NOT_VALID });
 };
 
+const getServiceNamesByProvider = (req, res) => {
+  const providerId = getId(req);
+  if (ObjectId.isValid(providerId)) {
+    Service.find({ providerId }, { name: 1 })
+      .then(services => res.status(200).send(services.map(({ name }) => name)))
+      .catch(error => res.status(400).send(error));
+  } else res.status(400).send({ error: ERROR.SERVICE.PROVIDER_ID_NOT_VALID });
+};
+
 const createService = (req, res) => {
   const { providerId, name, price, category, duration, averageRating, pictures } = getBody(req);
   if (ObjectId.isValid(providerId)) {
@@ -147,6 +156,7 @@ module.exports = {
   searchServices,
   getServiceById,
   getServicesByProvider,
+  getServiceNamesByProvider,
   createService,
   updateService,
 };

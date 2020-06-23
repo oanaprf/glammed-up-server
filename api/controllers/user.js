@@ -33,6 +33,15 @@ const getUserById = (req, res) => {
   } else res.status(400).send({ error: ERROR.USER.USER_ID_NOT_VALID });
 };
 
+const getClientNames = (req, res) => {
+  User.find({ isProvider: false }, { firstName: 1, lastName: 1 })
+    .then(clients => {
+      if (clients) res.status(200).send(clients.map(({ fullName }) => fullName));
+      else res.status(404).send({ error: ERROR.USER.USER_NOT_FOUND });
+    })
+    .catch(error => res.status(400).send(error));
+};
+
 const createUser = (req, res) => {
   const { firstName, lastName, email, password } = getBody(req);
   const user = new User({ _id: new ObjectId(), firstName, lastName, email });
@@ -94,4 +103,4 @@ const updateUser = (req, res) => {
   } else res.status(400).send({ error: ERROR.USER.USER_ID_NOT_VALID });
 };
 
-module.exports = { getUserById, createUser, updateUser };
+module.exports = { getUserById, getClientNames, createUser, updateUser };
