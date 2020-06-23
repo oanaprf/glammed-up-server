@@ -126,11 +126,10 @@ const getPayloadWithoutIds = compose(omit([SERVICE_ID, PROVIDER_ID, CLIENT_ID]),
 const mapDate = map('date');
 const getMinutesBetweenDates = (startDate, endDate) => (endDate - startDate) / 60000;
 const getTimeInMinutes = date => date.getUTCHours() * 60 + date.getUTCMinutes();
-const getTimeFromMinutes = date => minutes => {
-  const newDate = new Date(date);
-  newDate.setUTCHours(Math.floor(minutes / 60));
-  newDate.setUTCMinutes(minutes % 60);
-  return newDate;
+const getTimeFromMinutes = minutes => {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hours}${hours === 0 ? '0' : ''}:${mins}${mins === 0 ? '0' : ''}`;
 };
 const getProviderTime = (date, time) => {
   const newDate = new Date(date);
@@ -169,7 +168,7 @@ const getFreeSpots = (dates, duration, startTime, endTime) => {
       }
     }
   }
-  return map(getTimeFromMinutes(startTime))(difference(freeSpots, overlap));
+  return map(getTimeFromMinutes)(difference(freeSpots, overlap));
 };
 
 module.exports = {
