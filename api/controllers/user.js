@@ -55,9 +55,7 @@ const createUser = (req, res) => {
           email,
           password: bcrypt.hashSync(password, 12),
         })
-        .then(() =>
-          res.status(201).send({ message: SUCCESS.USER.USER_SUCCESSFULLY_CREATED, data: mongoUser })
-        )
+        .then(() => res.status(201).send(mongoUser))
         .catch(firebaseError => res.status(400).send(firebaseError))
     )
     .catch(mongoError => treatErrors(res, mongoError));
