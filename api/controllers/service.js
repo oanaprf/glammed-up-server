@@ -51,7 +51,7 @@ const getServices = (req, res) => {
   Service.find({
     ...(mostPopular
       ? { averageRating: 5 }
-      : { $or: [{ rating: { $lt: 5 } }, { rating: { $exists: 0 } }] }),
+      : { $or: [{ averageRating: { $lt: 5 } }, { averageRating: { $exists: 0 } }] }),
   })
     .populate([populateProvider, populateReview])
     .then(services => res.status(200).send(services))
