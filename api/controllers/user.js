@@ -2,7 +2,7 @@ const admin = require('firebase-admin');
 const {
   Types: { ObjectId },
 } = require('mongoose');
-const bcrypt = require('bcrypt');
+// const bcrypt = require('bcrypt');
 const isEmpty = require('lodash/fp/isEmpty');
 
 const User = require('../models/user');
@@ -53,7 +53,8 @@ const createUser = (req, res) => {
         .createUser({
           uid: `${mongoUser._id}`,
           email,
-          password: bcrypt.hashSync(password, 12),
+          password,
+          // password: bcrypt.hashSync(password, 12),
         })
         .then(() => res.status(201).send(mongoUser))
         .catch(firebaseError => res.status(400).send(firebaseError))
