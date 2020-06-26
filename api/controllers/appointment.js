@@ -155,12 +155,7 @@ const createAppointment = async (req, res) => {
         });
         appointment
           .save()
-          .then(mongoAppointment =>
-            res.status(201).send({
-              message: SUCCESS.APPOINTMENT.APPOINTMENT_SUCCESSFULLY_CREATED,
-              data: mongoAppointment,
-            })
-          )
+          .then(() => getAppointmentsByClient({ params: { id: clientId } }, res))
           .catch(error => res.status(400).send(mapErrors(error)));
       }
     } catch (err) {

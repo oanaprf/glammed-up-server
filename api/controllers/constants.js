@@ -103,7 +103,7 @@ const getObjectDiff = (obj1, obj2) =>
 const isIdInvalid = negate(ObjectId.isValid);
 const isNotTruthy = negate(identity);
 const providerNotValid = provider => !provider || !provider.isProvider;
-const clientNotValid = client => !client || client.isProvider;
+const clientNotValid = client => !client;
 const invalidIdErrorMessages = {
   [SERVICE_ID]: [isIdInvalid, ERROR.SERVICE.SERVICE_ID_NOT_VALID],
   [PROVIDER_ID]: [isIdInvalid, ERROR.SERVICE.PROVIDER_ID_NOT_VALID],
