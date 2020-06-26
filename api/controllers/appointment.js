@@ -17,6 +17,7 @@ const {
   getPayloadWithoutIds,
   getProviderTime,
   getFreeSpots,
+  sendPushNotification,
 } = require('./constants');
 const {
   USER: {
@@ -155,7 +156,16 @@ const createAppointment = async (req, res) => {
         });
         appointment
           .save()
-          .then(() => getAppointmentsByClient({ params: { id: clientId } }, res))
+          .then(() => {
+            getAppointmentsByClient({ params: { id: clientId } }, res);
+            User.findById(providerId, { pushToken: 1 }).then(({ pushToken }) =>
+              sendPushNotification(pushToken, 'O nouă programare', 'Ai o nouă programare!', {
+                appointment,
+                service,
+                client,
+              })
+            );
+          })
           .catch(error => res.status(400).send(mapErrors(error)));
       }
     } catch (err) {

@@ -43,8 +43,8 @@ const getClientNames = (_, res) => {
 };
 
 const createUser = (req, res) => {
-  const { firstName, lastName, email, password } = getBody(req);
-  const user = new User({ _id: new ObjectId(), firstName, lastName, email });
+  const { firstName, lastName, email, password, pushToken } = getBody(req);
+  const user = new User({ _id: new ObjectId(), firstName, lastName, email, pushToken });
   user
     .save()
     .then(mongoUser =>

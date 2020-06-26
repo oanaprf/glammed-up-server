@@ -72,6 +72,9 @@ const UserSchema = new mongoose.Schema(
         message: USER.NOT_VALID.END_TIME,
       },
     },
+    [USER.FIELDS.PUSH_TOKEN]: {
+      type: String,
+    },
   },
   {
     versionKey: false,

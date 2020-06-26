@@ -11,6 +11,7 @@ const USER = {
     PROFILE_PICTURE: 'profilePicture',
     START_TIME: 'startTime',
     END_TIME: 'endTime',
+    PUSH_TOKEN: 'pushToken',
   },
   REQUIRED: {
     FIRST_NAME: 'FIRST_NAME_REQUIRED',

@@ -13,6 +13,9 @@ const map = require('lodash/fp/map');
 const min = require('lodash/fp/min');
 const max = require('lodash/fp/max');
 const difference = require('lodash/fp/difference');
+const { Expo } = require('expo-server-sdk');
+
+const expo = new Expo();
 
 const {
   REVIEW: {
@@ -171,6 +174,22 @@ const getFreeSpots = (dates, duration, startTime, endTime) => {
   return map(getTimeFromMinutes)(difference(freeSpots, overlap));
 };
 
+const sendPushNotification = async (pushToken, title, message, data) => {
+  if (Expo.isExpoPushToken(pushToken)) {
+    await expo.sendPushNotificationsAsync([
+      {
+        to: pushToken,
+        sound: 'default',
+        title,
+        body: message,
+        _displayInForeground: true,
+        data,
+      },
+    ]);
+    // eslint-disable-next-line no-console
+  } else console.log('Not a valid Expo push token');
+};
+
 module.exports = {
   SUCCESS,
   ERROR,
@@ -187,4 +206,5 @@ module.exports = {
   getPayloadWithoutIds,
   getProviderTime,
   getFreeSpots,
+  sendPushNotification,
 };
