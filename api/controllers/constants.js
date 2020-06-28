@@ -142,9 +142,9 @@ const getProviderTime = (date, time) => {
 };
 
 const getFreeSpots = (dates, duration, startTime, endTime) => {
-  const appointments = map(({ date: serviceDate, service: { duration: serviceDuration } }) => ({
+  const appointments = map(({ date: serviceDate, service = {} }) => ({
     date: getTimeInMinutes(serviceDate),
-    duration: serviceDuration,
+    duration: getOr(0, 'duration')(service),
   }))(dates);
 
   let freeSpots = [];

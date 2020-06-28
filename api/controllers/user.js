@@ -7,7 +7,7 @@ const isEmpty = require('lodash/fp/isEmpty');
 
 const User = require('../models/user');
 const { USER } = require('../models/constants');
-const { SUCCESS, ERROR, getBody, getId, mapErrors, getObjectDiff } = require('./constants');
+const { ERROR, getBody, getId, mapErrors, getObjectDiff } = require('./constants');
 
 const emailAlreadyExistsError = {
   errors: { [USER.FIELDS.EMAIL]: ERROR.USER.EMAIL_ALREADY_EXISTS },
@@ -74,10 +74,13 @@ const updateUser = (req, res) => {
           userToBeUpdated
             .save()
             .then(() => {
-              if (USER.FIELDS.EMAIL in changes) {
+              if (USER.FIELDS.EMAIL in changes || 'password' in changes) {
                 admin
                   .auth()
-                  .updateUser(id, { email: changes.email })
+                  .updateUser(id, {
+                    ...(changes.email && { email: changes.email }),
+                    ...(changes.password && { password: changes.password }),
+                  })
                   .then(user => {
                     if (user) {
                       res.status(200).send(userToBeUpdated);
@@ -90,7 +93,7 @@ const updateUser = (req, res) => {
             })
             .catch(mongoError => treatErrors(res, mongoError));
         } else {
-          res.status(200).send({ message: SUCCESS.USER.USER_NOT_CHANGED, data: userToBeUpdated });
+          res.status(200).send(userToBeUpdated);
         }
       })
       .catch(() => res.status(404).send({ error: ERROR.USER.USER_NOT_FOUND }));
