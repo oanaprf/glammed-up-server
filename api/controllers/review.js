@@ -101,7 +101,7 @@ const createReview = async (req, res) => {
         });
         review
           .save()
-          .then(mongoReview =>
+          .then(() =>
             Review.find({ serviceId }).then(reviews => {
               const averageRating = meanBy(({ rating: r }) => r, reviews).toFixed(1);
               Service.findByIdAndUpdate(
@@ -109,12 +109,7 @@ const createReview = async (req, res) => {
                 { $set: { averageRating } },
                 { runValidators: true, new: true }
               )
-                .then(() =>
-                  res.status(201).send({
-                    message: SUCCESS.REVIEW.REVIEW_SUCCESSFULLY_CREATED,
-                    data: mongoReview,
-                  })
-                )
+                .then(() => getReviewsByClient({ params: { id: clientId } }, res))
                 .catch(error => res.status(400).send(mapErrors(error)));
             })
           )
