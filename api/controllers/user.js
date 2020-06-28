@@ -80,17 +80,12 @@ const updateUser = (req, res) => {
                   .updateUser(id, { email: changes.email })
                   .then(user => {
                     if (user) {
-                      res.status(200).send({
-                        message: SUCCESS.USER.USER_SUCCESSFULLY_UPDATED,
-                        data: userToBeUpdated,
-                      });
+                      res.status(200).send(userToBeUpdated);
                     }
                   })
                   .catch(firebaseError => res.status(400).send(firebaseError));
               } else {
-                res
-                  .status(200)
-                  .send({ message: SUCCESS.USER.USER_SUCCESSFULLY_UPDATED, data: userToBeUpdated });
+                res.status(200).send(userToBeUpdated);
               }
             })
             .catch(mongoError => treatErrors(res, mongoError));

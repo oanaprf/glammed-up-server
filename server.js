@@ -45,8 +45,8 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
+app.use(bodyParser.json({ limit: '5mb' }));
 app.use(cors());
 app.use(authMiddleware);
 app.use(userRouter);

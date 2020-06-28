@@ -39,7 +39,7 @@ const ServiceSchema = new mongoose.Schema(
       min: [0, SERVICE.MIN.AVERAGE_RATING],
       max: [5, SERVICE.MAX.AVERAGE_RATING],
     },
-    [SERVICE.FIELDS.PICTURES]: [{ type: Buffer }],
+    [SERVICE.FIELDS.PICTURES]: [{ type: String }],
   },
   {
     versionKey: false,

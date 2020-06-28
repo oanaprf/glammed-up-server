@@ -53,7 +53,7 @@ const UserSchema = new mongoose.Schema(
       maxlength: [50, USER.MAX_LENGTH.ADDRESS],
     },
     [USER.FIELDS.IS_PROVIDER]: { type: Boolean, default: false },
-    [USER.FIELDS.PROFILE_PICTURE]: Buffer,
+    [USER.FIELDS.PROFILE_PICTURE]: String,
     [USER.FIELDS.START_TIME]: {
       type: String,
       default: '10:00',

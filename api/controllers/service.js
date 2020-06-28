@@ -104,7 +104,7 @@ const getServiceNamesByProvider = (req, res) => {
 };
 
 const createService = (req, res) => {
-  const { providerId, name, price, category, duration, averageRating, pictures } = getBody(req);
+  const { providerId, name, price, category, duration, pictures } = getBody(req);
   if (ObjectId.isValid(providerId)) {
     User.findById(providerId)
       .then(user => {
@@ -116,17 +116,11 @@ const createService = (req, res) => {
             price,
             category,
             duration,
-            averageRating,
             pictures,
           });
           service
             .save()
-            .then(mongoService =>
-              res.status(201).send({
-                message: SUCCESS.SERVICE.SERVICE_SUCCESSFULLY_CREATED,
-                data: mongoService,
-              })
-            )
+            .then(() => getServicesByProvider({ params: { id: providerId } }, res))
             .catch(error => res.status(400).send(mapErrors(error)));
         } else res.status(400).send({ error: ERROR.SERVICE.PROVIDER_ID_NOT_VALID });
       })
