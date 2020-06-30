@@ -75,6 +75,11 @@ const UserSchema = new mongoose.Schema(
     [USER.FIELDS.PUSH_TOKEN]: {
       type: String,
     },
+    [SERVICE.FIELDS.AVERAGE_RATING]: {
+      type: Number,
+      min: [0, SERVICE.MIN.AVERAGE_RATING],
+      max: [5, SERVICE.MAX.AVERAGE_RATING],
+    },
   },
   {
     versionKey: false,

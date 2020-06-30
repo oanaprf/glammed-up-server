@@ -1,4 +1,6 @@
 const meanBy = require('lodash/fp/meanBy');
+const filter = require('lodash/fp/filter');
+const compose = require('lodash/fp/compose');
 
 const {
   Types: { ObjectId },
@@ -109,7 +111,22 @@ const createReview = async (req, res) => {
                 { $set: { averageRating } },
                 { runValidators: true, new: true }
               )
-                .then(() => getReviewsByClient({ params: { id: clientId } }, res))
+                .then(() =>
+                  Service.find({ providerId }).then(services => {
+                    const averageProviderRating = compose(
+                      avgRating => avgRating.toFixed(1),
+                      meanBy('averageRating'),
+                      filter('averageRating')
+                    )(services);
+                    User.findByIdAndUpdate(
+                      providerId,
+                      { $set: { averageRating: averageProviderRating } },
+                      { runValidators: true, new: true }
+                    )
+                      .then(() => getReviewsByClient({ params: { id: clientId } }, res))
+                      .catch(error => res.status(400).send(mapErrors(error)));
+                  })
+                )
                 .catch(error => res.status(400).send(mapErrors(error)));
             })
           )
