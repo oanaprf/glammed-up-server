@@ -50,7 +50,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       trim: true,
       minlength: [5, USER.MIN_LENGTH.ADDRESS],
-      maxlength: [50, USER.MAX_LENGTH.ADDRESS],
+      maxlength: [100, USER.MAX_LENGTH.ADDRESS],
     },
     [USER.FIELDS.IS_PROVIDER]: { type: Boolean, default: false },
     [USER.FIELDS.PROFILE_PICTURE]: String,
