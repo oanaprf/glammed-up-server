@@ -10,8 +10,6 @@ const negate = require('lodash/fp/negate');
 const identity = require('lodash/fp/identity');
 const omit = require('lodash/fp/omit');
 const map = require('lodash/fp/map');
-const min = require('lodash/fp/min');
-const max = require('lodash/fp/max');
 const difference = require('lodash/fp/difference');
 const { Expo } = require('expo-server-sdk');
 
@@ -126,7 +124,6 @@ const findInvalidIdErrorMessage = findErrorMessage(invalidIdErrorMessages);
 const findNotFoundErrorMessage = findErrorMessage(notFoundErrorMessages);
 const getPayloadWithoutIds = compose(omit([SERVICE_ID, PROVIDER_ID, CLIENT_ID]), getBody);
 
-const mapDate = map('date');
 const getMinutesBetweenDates = (startDate, endDate) => (endDate - startDate) / 60000;
 const getTimeInMinutes = date => date.getUTCHours() * 60 + date.getUTCMinutes();
 const getTimeFromMinutes = minutes => {
@@ -134,6 +131,7 @@ const getTimeFromMinutes = minutes => {
   const mins = minutes % 60;
   return `${hours}${hours === 0 ? '0' : ''}:${mins}${mins === 0 ? '0' : ''}`;
 };
+
 const getProviderTime = (date, time) => {
   const newDate = new Date(date);
   newDate.setUTCHours(time.split(':')[0]);
@@ -142,23 +140,22 @@ const getProviderTime = (date, time) => {
 };
 
 const getFreeSpots = (dates, duration, startTime, endTime) => {
-  const appointments = map(({ date: serviceDate, service = {} }) => ({
+  const appointments = map(({ date: serviceDate, service: { duration: serviceDuration } }) => ({
     date: getTimeInMinutes(serviceDate),
-    duration: getOr(0, 'duration')(service),
+    duration: serviceDuration,
   }))(dates);
 
   let freeSpots = [];
   const intervalCount = getMinutesBetweenDates(startTime, endTime) / 15;
   const startTimeMinutes = getTimeInMinutes(startTime);
+  const endTimeMinutes = getTimeInMinutes(endTime);
   for (let i = 0; i < intervalCount; i++) {
     freeSpots = [...freeSpots, startTimeMinutes + i * 15];
   }
 
-  const appointmentsMin = compose(min, mapDate)(appointments);
-  const appointmentsMax = compose(max, mapDate)(appointments);
   let overlap = [];
   for (let i = 0; i < getLength(freeSpots); i++) {
-    if (freeSpots[i] + duration >= appointmentsMin && freeSpots[i] + duration <= appointmentsMax) {
+    if (freeSpots[i] + duration >= startTimeMinutes && freeSpots[i] + duration <= endTimeMinutes) {
       for (let j = 0; j < getLength(appointments); j++) {
         if (
           !(
