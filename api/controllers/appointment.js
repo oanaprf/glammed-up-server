@@ -82,7 +82,7 @@ const getAppointmentsByClient = (req, res) => {
             }
         : {}),
     })
-      .sort({ date: 1 })
+      .sort({ date: -1 })
       .populate([populateService, populateProvider])
       .then(apps => res.status(200).send(apps))
       .catch(error => res.status(400).send(error));
